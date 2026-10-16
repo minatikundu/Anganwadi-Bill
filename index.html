@@ -73,7 +73,7 @@
         <div>
           <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
             <span class="material-symbols-outlined text-emerald-800">how_to_reg</span>
-            Daily Beneficiary Attendance Register (Sheet 1)
+            Daily Beneficiary Attendance Register
           </h2>
           <p class="text-xs text-gray-500">Daily head-count feeds Vegetable Bill and Stock Form V automatically.</p>
         </div>
@@ -342,7 +342,7 @@
         <div>
           <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
             <span class="material-symbols-outlined text-emerald-800">inventory_2</span>
-            Stock Bill (Sheet 2 Transactions & Form V Monthly Register)
+            Stock Bill (Transactions & Monthly Register)
           </h2>
           <p class="text-xs text-gray-500">Includes previous month opening balance editing, Sheet 2 transactions with 3 types & date picker, and Form V consumption ceiling logic.</p>
         </div>
@@ -549,10 +549,9 @@
     let rates = JSON.parse(localStorage.getItem('awc_rates')) || JSON.parse(JSON.stringify(defaultRates));
 
     let attendanceRoll = [];
-    let transactions = JSON.parse(localStorage.getItem('awc_stock_txs')) || [
-      { id: 'tx-1', date: '2026-10-06', type: 'inward_receivable', remarks: 'Challan #CH-8821', rice: 100.0, dal: 30.0, salt: 5.0, oil: 10.0 },
+    let transactions = JSON.parse(localStorage.getItem('awc_stock_txs')) ;/*|| [
       { id: 'tx-2', date: '2026-10-20', type: 'inward_receivable', remarks: 'Challan #CH-9044', rice: 100.0, dal: 30.0, salt: 0.0, oil: 10.0 }
-    ];
+    ];*/
 
     /**
      * CALENDAR & ATTENDANCE GENERATOR
@@ -693,10 +692,10 @@
         if (grp === 'A' || grp === 'B') {
           row.status = 'Open';
           row.group = grp;
-          row.pw = parseInt(document.getElementById('def-pw').value, 10) || 12;
-          row.lm = parseInt(document.getElementById('def-lm').value, 10) || 14;
-          row.c6 = parseInt(document.getElementById('def-c6').value, 10) || 25;
-          row.c36 = parseInt(document.getElementById('def-c36').value, 10) || 30;
+          row.pw = parseInt(document.getElementById('def-pw').value, 10) || 0;
+          row.lm = parseInt(document.getElementById('def-lm').value, 10) || 0;
+          row.c6 = parseInt(document.getElementById('def-c6').value, 10) || 0;
+          row.c36 = parseInt(document.getElementById('def-c36').value, 10) || 0;
           row.sam = parseInt(document.getElementById('def-sam').value, 10) || 0;
         }
       } else {
