@@ -1,1346 +1,1635 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>ICDS Anganwadi Master Register & Accounts Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- jsPDF & html2canvas for Direct Single-Click A4 PDF Generation without opening browser print dialog -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    body { font-family: 'Public Sans', sans-serif; background-color: #f4fbf7; color: #111827; }
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ICDS Anganwadi Master Portal - All 6 Modules</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Client-side Direct PDF Generation library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+    body { font-family: 'Public Sans', sans-serif; background-color: #f8fafc; color: #0f172a; }
     .font-mono { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-    .font-bengali { font-family: 'Noto Serif Bengali', 'Public Sans', serif; }
     input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; }
     
     @media print {
-      .no-print, header, nav, .print-hide { display: none !important; }
+      .no-print, header, nav, #global-download-banner, .action-btn { display: none !important; }
       body { background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
-      main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-      .print-page { box-shadow: none !important; border: none !important; width: 100% !important; margin: 0 !important; padding: 4mm !important; page-break-after: always; }
-      .print-compact table { font-size: 8.5px !important; }
-      .print-compact th, .print-compact td { padding: 1.5px 2px !important; }
+      .print-page { box-shadow: none !important; border: 1px solid #94a3b8 !important; page-break-after: always; margin: 0 !important; width: 100% !important; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-[#f4fbf7]">
-
+<body class="min-h-screen flex flex-col">
 <!-- TOP HEADER -->
-<header class="bg-white border-b border-emerald-900/10 sticky top-0 z-50 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-sm no-print">
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold text-base shadow-sm">402</div>
-    <div>
-      <div class="flex items-center gap-2">
-        <h1 class="font-bold text-base text-emerald-950" id="header-cname">Dakshin Para Anganwadi Center (No. 402)</h1>
-        <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full font-mono" id="header-ccode">14-Digit: 19336040201101</span>
-      </div>
-      <p class="text-xs text-gray-500">ICDS Mission Poshan 2.0 • Chapra ICDS Project, Nadia / South 24 Parganas</p>
-    </div>
-  </div>
-
-  <div class="flex items-center gap-2 flex-wrap">
-    <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1 text-xs">
-      <span class="material-symbols-outlined text-gray-500 text-sm">calendar_month</span>
-      <span class="font-medium text-gray-600">Reporting Month:</span>
-      <select id="month-picker" onchange="changeCalendarMonth(this.value)" class="font-semibold bg-transparent border-0 focus:outline-none cursor-pointer">
-        <option value="6-2026">June 2026 (30 Days)</option>
-        <option value="7-2026">July 2026 (31 Days)</option>
-        <option value="8-2026">August 2026 (31 Days)</option>
-        <option value="9-2026">September 2026 (30 Days)</option>
-        <option value="10-2026" selected>October 2026 (31 Days)</option>
-        <option value="11-2026">November 2026 (30 Days)</option>
-        <option value="12-2026">December 2026 (31 Days)</option>
-      </select>
-    </div>
-
-    <button onclick="downloadSelfHtmlFile()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition">
-      <span class="material-symbols-outlined text-sm">download</span>
-      <span>Download HTML File (.html)</span>
-    </button>
-  </div>
-</header>
-
-<!-- 6-TAB MAIN NAVIGATION -->
-<nav class="bg-emerald-900 text-white px-4 flex gap-1 text-xs font-medium border-b border-emerald-950/20 overflow-x-auto no-print">
-  <button id="nav-tab-1" onclick="switchMainTab(1)" class="px-4 py-2.5 border-b-2 border-white text-white font-semibold flex items-center gap-1.5 transition">
-    <span class="material-symbols-outlined text-base">how_to_reg</span> 1. Data Entry
-  </button>
-  <button id="nav-tab-2" onclick="switchMainTab(2)" class="px-4 py-2.5 border-b-2 border-transparent hover:text-emerald-200 flex items-center gap-1.5 transition text-emerald-100">
-    <span class="material-symbols-outlined text-base">currency_rupee</span> 2. Rate Chart
-  </button>
-  <button id="nav-tab-3" onclick="switchMainTab(3)" class="px-4 py-2.5 border-b-2 border-transparent hover:text-emerald-200 flex items-center gap-1.5 transition text-emerald-100">
-    <span class="material-symbols-outlined text-base">receipt_long</span> 3. Vegetable Bill
-  </button>
-  <button id="nav-tab-4" onclick="switchMainTab(4)" class="px-4 py-2.5 border-b-2 border-transparent hover:text-emerald-200 flex items-center gap-1.5 transition text-emerald-100">
-    <span class="material-symbols-outlined text-base">inventory_2</span> 4. Stock Register
-  </button>
-  <button id="nav-tab-5" onclick="switchMainTab(5)" class="px-4 py-2.5 border-b-2 border-transparent hover:text-emerald-200 flex items-center gap-1.5 transition text-emerald-100">
-    <span class="material-symbols-outlined text-base">local_fire_department</span> 5. Fuel Bill
-  </button>
-  <button id="nav-tab-6" onclick="switchMainTab(6)" class="px-4 py-2.5 border-b-2 border-transparent hover:text-emerald-200 flex items-center gap-1.5 transition text-emerald-100">
-    <span class="material-symbols-outlined text-base">file_download</span> 6. Download
-  </button>
-</nav>
-
-<!-- MAIN APP BODY -->
-<main class="flex-1 p-4 max-w-7xl mx-auto w-full space-y-6">
-
-  <!-- ========================================== -->
-  <!-- TAB 1: DATA ENTRY -->
-  <!-- ========================================== -->
-  <section id="module-1" class="tab-module space-y-5">
-    <!-- Header banner -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-      <div>
-        <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
-          <span class="material-symbols-outlined text-emerald-800">dataset</span>
-          Center Basic Details & Monthly Beneficiaries Data Entry
-        </h2>
-        <p class="text-xs text-gray-500">14-digit Anganwadi Center profile, batch defaults, and calendar roll.</p>
-      </div>
-      <div class="text-xs bg-emerald-50 border border-emerald-200 text-emerald-900 px-3 py-1.5 rounded-lg font-mono font-semibold">
-        Active Month: <span id="label-active-month">October 2026 (31 Days)</span>
-      </div>
-    </div>
-
-    <!-- 1. Center Profile -->
-    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950 flex items-center gap-1.5 border-b pb-2">
-        <span class="material-symbols-outlined text-sm">store</span> 1. Anganwadi Center Profile (Basic Details)
-      </h3>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-        <div>
-          <label class="block font-semibold text-gray-700 mb-1">AWC Name</label>
-          <input type="text" id="prof-cname" value="Dakshin Para Anganwadi Center" onchange="updateProfileFields()" class="w-full border rounded px-2.5 py-1.5 font-semibold"/>
-        </div>
-        <div>
-          <label class="block font-semibold text-gray-700 mb-1">AWC No.</label>
-          <input type="text" id="prof-cno" value="402" onchange="updateProfileFields()" class="w-full border rounded px-2.5 py-1.5 font-mono"/>
-        </div>
-        <div>
-          <label class="block font-semibold text-emerald-900 mb-1">AWC Code (14 Digit)</label>
-          <input type="text" id="prof-ccode" maxlength="14" value="19336040201101" onchange="updateProfileFields()" class="w-full border border-emerald-300 rounded px-2.5 py-1.5 font-mono font-bold text-emerald-950"/>
-        </div>
-        <div>
-          <label class="block font-semibold text-gray-700 mb-1">Project Name</label>
-          <input type="text" id="prof-proj" value="Chapra ICDS Project / Diamond Harbour" onchange="updateProfileFields()" class="w-full border rounded px-2.5 py-1.5"/>
-        </div>
-        <div>
-          <label class="block font-semibold text-gray-700 mb-1">District</label>
-          <input type="text" id="prof-dist" value="Nadia / South 24 Parganas" onchange="updateProfileFields()" class="w-full border rounded px-2.5 py-1.5"/>
-        </div>
-        <div>
-          <label class="block font-semibold text-gray-700 mb-1">Sector Name</label>
-          <input type="text" id="prof-sect" value="Sector 4 South" onchange="updateProfileFields()" class="w-full border rounded px-2.5 py-1.5"/>
-        </div>
-        <div class="md:col-span-2">
-          <label class="block font-semibold text-gray-700 mb-1">Gram Panchayat / Ward Name</label>
-          <input type="text" id="prof-gp" value="Ward No. 12 GP" onchange="updateProfileFields()" class="w-full border rounded px-2.5 py-1.5"/>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Beneficiaries Master Batch Defaults -->
-    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
-      <div class="flex items-center justify-between border-b pb-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950">2. Beneficiaries Batch Entry Defaults (Given by User)</h3>
-        <span class="text-xs bg-emerald-50 text-emerald-800 font-bold px-2.5 py-1 rounded-full font-mono">Batch Total: <span id="batch-sum-badge">0</span></span>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-        <div class="bg-gray-50 p-2.5 rounded-lg border">
-          <label class="text-[11px] font-semibold text-gray-600 block mb-1">Pregnant Women (PW)</label>
-          <input type="number" id="def-pw" min="0" value="0" oninput="updateBatchSum()" class="w-full bg-white border rounded px-2 py-1 text-sm font-bold font-mono"/>
-        </div>
-        <div class="bg-gray-50 p-2.5 rounded-lg border">
-          <label class="text-[11px] font-semibold text-gray-600 block mb-1">Lactating Mothers (LM)</label>
-          <input type="number" id="def-lm" min="0" value="0" oninput="updateBatchSum()" class="w-full bg-white border rounded px-2 py-1 text-sm font-bold font-mono"/>
-        </div>
-        <div class="bg-gray-50 p-2.5 rounded-lg border">
-          <label class="text-[11px] font-semibold text-gray-600 block mb-1">6M-6Y Normal Children</label>
-          <input type="number" id="def-child" min="0" value="0" oninput="updateBatchSum()" class="w-full bg-white border rounded px-2 py-1 text-sm font-bold font-mono"/>
-        </div>
-        <div class="bg-amber-50/70 p-2.5 rounded-lg border border-amber-200">
-          <label class="text-[11px] font-semibold text-amber-900 block mb-1">SAM Children</label>
-          <input type="number" id="def-sam" min="0" value="0" oninput="updateBatchSum()" class="w-full bg-white border rounded px-2 py-1 text-sm font-bold font-mono text-amber-900"/>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 pt-1 flex-wrap">
-        <button onclick="applyBatchDefaults()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 transition">
-          <span class="material-symbols-outlined text-sm">auto_fix_high</span> Apply Batch Entry to Open Days
-        </button>
-        <button onclick="resetDefaultsToZero()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-2 rounded-lg flex items-center gap-1.5 border transition">
-          <span class="material-symbols-outlined text-sm">restart_alt</span> Reset All Values to Zero (0)
-        </button>
-      </div>
-    </div>
-
-    <!-- 3. Daily Attendance Register Table -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-4 space-y-2">
-      <div class="flex justify-between items-center pb-2 border-b">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950">3. Daily Attendance & Feeding Register</h3>
-        <span class="text-xs font-mono font-semibold">Open Days: <span id="open-days-count" class="font-bold text-emerald-800">0</span> / <span id="total-days-count">31</span></span>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs text-left">
-          <thead class="bg-gray-50 border-b text-gray-700 font-semibold uppercase">
-            <tr>
-              <th class="py-2.5 px-3">Date</th>
-              <th class="py-2.5 px-2">Day</th>
-              <th class="py-2.5 px-2">Status</th>
-              <th class="py-2.5 px-2 text-center">Ration</th>
-              <th class="py-2.5 px-2 text-right">PW</th>
-              <th class="py-2.5 px-2 text-right">LM</th>
-              <th class="py-2.5 px-2 text-right">6M-6Y Normal</th>
-              <th class="py-2.5 px-2 text-right text-amber-900 bg-amber-50/50">SAM</th>
-              <th class="py-2.5 px-3 text-right font-bold text-emerald-900 bg-emerald-50/50">Day Total</th>
-              <th class="py-2.5 px-2 text-center">Copy</th>
-            </tr>
-          </thead>
-          <tbody id="attendance-tbody" class="divide-y divide-gray-100 font-mono"></tbody>
-          <tfoot class="bg-gray-100 border-t-2 font-bold font-mono">
-            <tr>
-              <td colspan="4" class="py-2.5 px-3">MONTH TOTAL</td>
-              <td id="tot-pw" class="py-2.5 px-2 text-right">0</td>
-              <td id="tot-lm" class="py-2.5 px-2 text-right">0</td>
-              <td id="tot-child" class="py-2.5 px-2 text-right">0</td>
-              <td id="tot-sam" class="py-2.5 px-2 text-right text-amber-900">0</td>
-              <td id="tot-gross" class="py-2.5 px-3 text-right text-emerald-900 text-sm">0</td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-
-    <!-- 4. Ration Type Wise Beneficiary Summary Table -->
-    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-2">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950 border-b pb-2">Ration Type Wise Beneficiary Count Summary</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs font-mono">
-          <thead class="bg-gray-50 border-b text-gray-600 font-semibold">
-            <tr>
-              <th class="py-2.5 px-3 text-left">Ration Type</th>
-              <th class="py-2.5 px-2 text-center">Scheduled</th>
-              <th class="py-2.5 px-2 text-center">Active Open</th>
-              <th class="py-2.5 px-2 text-right">PW</th>
-              <th class="py-2.5 px-2 text-right">LM</th>
-              <th class="py-2.5 px-2 text-right">Total Mothers</th>
-              <th class="py-2.5 px-2 text-right">Normal Children</th>
-              <th class="py-2.5 px-2 text-right text-amber-900">SAM</th>
-              <th class="py-2.5 px-3 text-right font-bold text-emerald-900">Gross Beneficiaries</th>
-            </tr>
-          </thead>
-          <tbody id="ration-summary-tbody" class="divide-y divide-gray-100"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- TAB 2: RATE CHART -->
-  <!-- ========================================== -->
-  <section id="module-2" class="tab-module hidden space-y-5">
-    <div class="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-      <div>
-        <h2 class="text-base font-bold text-gray-900 flex items-center gap-2">
-          <span class="material-symbols-outlined text-emerald-800">currency_rupee</span>
-          Rate Chart Master (Group A & Group B Editable Norms)
-        </h2>
-        <p class="text-xs text-gray-500">Financial heads take 2 decimals (₹), food grains take 3 decimals (kg). All values editable.</p>
-      </div>
-      <button onclick="resetDefaultRates()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-lg border transition">Reset to State Norms</button>
-    </div>
-
-    <!-- Official Fuel & Condiments Slab Tier Matrix -->
-    <div class="bg-white rounded-xl border border-amber-300 shadow-sm p-4 space-y-3 bg-amber-50/20">
-      <h3 class="text-xs font-bold text-amber-950 uppercase tracking-wider border-b border-amber-200 pb-2">Official Government Slabs for Fuel & Masala (জ্বালানী ও মসলা রেট স্ল্যাব)</h3>
-      <table class="w-full text-xs font-mono">
-        <thead class="bg-amber-100/60 text-amber-950 font-semibold">
-          <tr>
-            <th class="py-2 px-3 text-left">Beneficiary Headcount Slab (জন)</th>
-            <th class="py-2 px-3 text-right">Fuel Rate (₹)</th>
-            <th class="py-2 px-3 text-right">Masala Rate (₹)</th>
-            <th class="py-2 px-3 text-right font-bold">Combined Daily Total (₹)</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-amber-100">
-          <tr><td class="py-2 px-3 font-semibold">1 to 30 Beneficiaries (১-৩০ জন)</td><td class="py-2 px-3 text-right">₹ 32.00</td><td class="py-2 px-3 text-right">₹ 0.90</td><td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 32.90</td></tr>
-          <tr><td class="py-2 px-3 font-semibold">31 to 50 Beneficiaries (৩১-৫০ জন)</td><td class="py-2 px-3 text-right">₹ 43.00</td><td class="py-2 px-3 text-right">₹ 0.95</td><td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 43.95</td></tr>
-          <tr><td class="py-2 px-3 font-semibold">51 to 70 Beneficiaries (৫১-৭০ জন)</td><td class="py-2 px-3 text-right">₹ 53.00</td><td class="py-2 px-3 text-right">₹ 1.05</td><td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 54.05</td></tr>
-          <tr><td class="py-2 px-3 font-semibold">Above 70 Beneficiaries (৭১+ উপর)</td><td class="py-2 px-3 text-right">₹ 60.00</td><td class="py-2 px-3 text-right">₹ 1.15</td><td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 61.15</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Group Switcher for Rates -->
-    <div class="flex gap-2">
-      <button id="btn-rate-grp-a" onclick="setRateGroupTab('A')" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-800 text-white shadow-sm transition">Group A (Mon / Wed / Fri Menu)</button>
-      <button id="btn-rate-grp-b" onclick="setRateGroupTab('B')" class="px-4 py-2 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition">Group B (Tue / Thu / Sat Menu)</button>
-    </div>
-
-    <!-- 1. Financial Heads (2 Decimals) -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 space-y-3">
-      <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider border-b pb-2">1. Financial Heads (Egg, Potato, Vegetable, Sattu) - 2 Decimal Places (₹ / head)</h3>
-      <table class="w-full text-xs font-mono">
-        <thead class="bg-gray-50 border-b text-gray-700 font-semibold">
-          <tr>
-            <th class="py-2 px-3 text-left">Commodity Head</th>
-            <th class="py-2 px-2 text-right">Mother (PW+LM) (₹)</th>
-            <th class="py-2 px-2 text-right">Normal Children (₹)</th>
-            <th class="py-2 px-2 text-right text-amber-900">SAM Children (₹)</th>
-          </tr>
-        </thead>
-        <tbody id="rates-fin-tbody" class="divide-y divide-gray-100"></tbody>
-      </table>
-    </div>
-
-    <!-- 2. Food Grains (3 Decimals) -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 space-y-3">
-      <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider border-b pb-2">2. Food Grains Norms (Rice, Dal, Salt, Oil) - 3 Decimal Places (kg / head)</h3>
-      <table class="w-full text-xs font-mono">
-        <thead class="bg-gray-50 border-b text-gray-700 font-semibold">
-          <tr>
-            <th class="py-2 px-3 text-left">Commodity Head</th>
-            <th class="py-2 px-2 text-right">Mother (PW+LM) (kg)</th>
-            <th class="py-2 px-2 text-right">Normal Children (kg)</th>
-            <th class="py-2 px-2 text-right text-emerald-900">SAM Children (kg)</th>
-          </tr>
-        </thead>
-        <tbody id="rates-ration-tbody" class="divide-y divide-gray-100"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- TAB 3: VEGETABLE BILL -->
-  <!-- ========================================== -->
-  <section id="module-3" class="tab-module hidden space-y-5">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-gray-200 shadow-sm print-hide">
-      <div class="flex items-center gap-3">
-        <label class="flex items-center gap-2 text-xs font-semibold cursor-pointer select-none">
-          <input type="checkbox" id="chk-include-sattu" onchange="renderVegetableModule()" class="rounded w-4 h-4 text-emerald-700"/>
-          <span>Add Sattu Value with Daily Total (When unchecked, Sattu moves to far right column)</span>
-        </label>
-      </div>
-      <div class="text-xs text-gray-500 font-medium">Simple Calculation Table Format</div>
-    </div>
-
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-4 space-y-2">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950 border-b pb-2">Vegetable Bill Daily Expenses Calculation Table</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs font-mono text-left">
-          <thead id="veg-table-thead" class="bg-gray-50 border-b text-gray-700 font-semibold"></thead>
-          <tbody id="veg-table-tbody" class="divide-y divide-gray-100"></tbody>
-          <tfoot id="veg-table-tfoot" class="bg-gray-100 border-t-2 font-bold font-mono"></tfoot>
-        </table>
-      </div>
-    </div>
-
-    <!-- Group A and Group B Wise Summary Table -->
-    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-2">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950 border-b pb-2">Group A and Group B Wise Summary (Head Counts and Itemized Expenses)</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs font-mono">
-          <thead class="bg-gray-50 border-b text-gray-600 font-semibold">
-            <tr>
-              <th class="py-2.5 px-3 text-left">Ration Type</th>
-              <th class="py-2.5 px-2 text-center">Active Days</th>
-              <th class="py-2.5 px-2 text-right">Mothers</th>
-              <th class="py-2.5 px-2 text-right">Children</th>
-              <th class="py-2.5 px-2 text-right text-amber-900">SAM</th>
-              <th class="py-2.5 px-2 text-right">Total Heads</th>
-              <th class="py-2.5 px-2 text-right">Egg (₹)</th>
-              <th class="py-2.5 px-2 text-right">Potato (₹)</th>
-              <th class="py-2.5 px-2 text-right">Vegetable (₹)</th>
-              <th class="py-2.5 px-2 text-right">Sattu (₹)</th>
-              <th class="py-2.5 px-3 text-right font-bold text-emerald-900">Total Cost (₹)</th>
-            </tr>
-          </thead>
-          <tbody id="veg-summary-tbody" class="divide-y divide-gray-100"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- TAB 4: STOCK REGISTER -->
-  <!-- ========================================== -->
-  <section id="module-4" class="tab-module hidden space-y-5">
-    <!-- Editable Data Entry: Opening Balance & Inventory Transactions -->
-    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4 print-hide">
-      <div>
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950">1. Previous Month Balance (Opening Stock in kg - Editable)</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs mt-2">
-          <div><label class="block font-semibold mb-1">Fortified Rice (kg)</label><input type="number" step="0.001" id="op-rice" value="85.000" oninput="renderStockModule()" class="w-full border rounded px-2 py-1 font-mono font-bold"/></div>
-          <div><label class="block font-semibold mb-1">Dal / Pulses (kg)</label><input type="number" step="0.001" id="op-dal" value="24.500" oninput="renderStockModule()" class="w-full border rounded px-2 py-1 font-mono font-bold"/></div>
-          <div><label class="block font-semibold mb-1">Iodized Salt (kg)</label><input type="number" step="0.001" id="op-salt" value="4.200" oninput="renderStockModule()" class="w-full border rounded px-2 py-1 font-mono font-bold"/></div>
-          <div><label class="block font-semibold mb-1">Mustard Oil (kg)</label><input type="number" step="0.001" id="op-oil" value="9.800" oninput="renderStockModule()" class="w-full border rounded px-2 py-1 font-mono font-bold"/></div>
-        </div>
-      </div>
-
-      <!-- Inventory Transactions: Receivable, Borrowing, Return Lending, Lending, Return Borrowing -->
-      <div class="border-t pt-3 space-y-2">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-800">2. Inventory Movement (Receivable, Borrowing, Return Lending, Lending, Return Borrowing)</h3>
-          <button onclick="openTxModal()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm transition">
-            <span class="material-symbols-outlined text-sm">add_circle</span> Add Movement Entry
-          </button>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-xs font-mono">
-            <thead class="bg-gray-50 border-b text-gray-600 font-semibold">
-              <tr>
-                <th class="py-2 px-2 text-left">Date</th>
-                <th class="py-2 px-2 text-left">Transaction Type</th>
-                <th class="py-2 px-2 text-left">Particulars / Challan</th>
-                <th class="py-2 px-2 text-right">Rice (kg)</th>
-                <th class="py-2 px-2 text-right">Dal (kg)</th>
-                <th class="py-2 px-2 text-right">Salt (kg)</th>
-                <th class="py-2 px-2 text-right">Oil (kg)</th>
-                <th class="py-2 px-2 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody id="stock-tx-tbody" class="divide-y divide-gray-100"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Form V Daily Register Table with Receivable, Consumption, Balance subsections -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 space-y-2">
-      <div class="flex justify-between items-center pb-2 border-b">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950">3. Stock Register Daily Consumption & Balance Ledger (Form V)</h3>
-        <span class="text-xs font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Ceiling Rule: Balance cannot be negative</span>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-[11px] font-mono text-left">
-          <thead class="bg-gray-50 border-b">
-            <tr>
-              <th rowspan="2" class="py-2 px-2 border-r">Date</th>
-              <th rowspan="2" class="py-2 px-1 text-right">Mother</th>
-              <th rowspan="2" class="py-2 px-1 text-right">Children</th>
-              <th rowspan="2" class="py-2 px-1 text-right border-r">SAM</th>
-              <th colspan="3" class="py-1 px-1 text-center border-r bg-emerald-50/50">Rice (kg)</th>
-              <th colspan="3" class="py-1 px-1 text-center border-r bg-amber-50/50">Dal (kg)</th>
-              <th colspan="3" class="py-1 px-1 text-center border-r bg-emerald-50/50">Salt (kg)</th>
-              <th colspan="3" class="py-1 px-1 text-center bg-amber-50/50">Oil (kg)</th>
-            </tr>
-            <tr class="text-[10px] text-gray-500 border-b">
-              <th>Rec</th><th>Cons</th><th class="border-r font-bold">Bal</th>
-              <th>Rec</th><th>Cons</th><th class="border-r font-bold">Bal</th>
-              <th>Rec</th><th>Cons</th><th class="border-r font-bold">Bal</th>
-              <th>Rec</th><th>Cons</th><th class="font-bold">Bal</th>
-            </tr>
-          </thead>
-          <tbody id="stock-ledger-tbody" class="divide-y divide-gray-100"></tbody>
-          <tfoot id="stock-ledger-tfoot" class="bg-gray-100 border-t-2 font-bold"></tfoot>
-        </table>
-      </div>
-    </div>
-
-    <!-- Group A and Group B Wise Consumption Summary Table -->
-    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-2">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950 border-b pb-2">Monthly Stock Summary of Group A and Group B Breakdown</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs font-mono">
-          <thead class="bg-gray-50 border-b text-gray-600 font-semibold">
-            <tr>
-              <th class="py-2.5 px-3 text-left">Ration Type</th>
-              <th class="py-2.5 px-2 text-center">Open Days</th>
-              <th class="py-2.5 px-2 text-right">Mothers</th>
-              <th class="py-2.5 px-2 text-right">Children</th>
-              <th class="py-2.5 px-2 text-right">Rice (kg)</th>
-              <th class="py-2.5 px-2 text-right">Dal (kg)</th>
-              <th class="py-2.5 px-2 text-right">Salt (kg)</th>
-              <th class="py-2.5 px-2 text-right font-bold text-amber-950">Oil (kg)</th>
-            </tr>
-          </thead>
-          <tbody id="stock-ab-summary-tbody" class="divide-y divide-gray-100"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- TAB 5: FUEL BILL -->
-  <!-- ========================================== -->
-  <section id="module-5" class="tab-module hidden space-y-5">
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-4 space-y-2">
-      <div class="flex justify-between items-center pb-2 border-b">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-950">Fuel Bill Daily Calculations (Slab Tier Mapping)</h3>
-        <span class="text-xs text-gray-500 font-mono">Columns: Date, PW, LM, Children, SAM, Total, Fuel Charge, Condiment Charge, Total</span>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs font-mono text-left">
-          <thead class="bg-gray-50 border-b text-gray-700 font-semibold">
-            <tr>
-              <th class="py-2.5 px-3">Date</th>
-              <th class="py-2.5 px-2 text-right">PW</th>
-              <th class="py-2.5 px-2 text-right">LM</th>
-              <th class="py-2.5 px-2 text-right">Children</th>
-              <th class="py-2.5 px-2 text-right text-amber-900">SAM</th>
-              <th class="py-2.5 px-2 text-right font-bold">Total</th>
-              <th class="py-2.5 px-3 text-center">Applicable Slab</th>
-              <th class="py-2.5 px-2 text-right">Fuel Charge (₹)</th>
-              <th class="py-2.5 px-2 text-right">Condiment Charge (₹)</th>
-              <th class="py-2.5 px-3 text-right font-bold text-emerald-900 bg-emerald-50">Total (₹)</th>
-            </tr>
-          </thead>
-          <tbody id="fuel-simple-tbody" class="divide-y divide-gray-100"></tbody>
-          <tfoot id="fuel-simple-tfoot" class="bg-gray-100 border-t-2 font-bold font-mono"></tfoot>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================== -->
-  <!-- TAB 6: DOWNLOAD (DIRECT SINGLE-CLICK PDF EXPORTS) -->
-  <!-- ========================================== -->
-  <section id="module-6" class="tab-module hidden space-y-5">
-    <div class="bg-emerald-900 text-white rounded-xl p-6 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-      <div>
-        <h3 class="text-lg font-bold">ICDS Anganwadi Offline Standalone Application</h3>
-        <p class="text-xs text-emerald-100 mt-1">Download this complete `.html` file to run all calculations, registers, and PDF generation offline anywhere.</p>
-      </div>
-      <button onclick="downloadSelfHtmlFile()" class="bg-white text-emerald-950 font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 shadow hover:bg-emerald-50 transition">
-        <span class="material-symbols-outlined text-sm">download</span> Download HTML File (.html)
-      </button>
-    </div>
-
-    <!-- 3 Direct Single-Click A4 PDF Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <!-- Vegetable Bill PDF -->
-      <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-        <div>
-          <span class="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">Portrait 2-Page</span>
-          <h4 class="font-bold text-sm text-gray-900 mt-2">Vegetable Bill Official Voucher</h4>
-          <p class="text-xs text-gray-500 mt-1">Direct single-click A4 PDF download (Page 1: Voucher & Receipts, Page 2: Daily Table).</p>
-        </div>
-        <button onclick="exportDirectPdf('veg')" class="mt-4 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center gap-1.5 transition">
-          <span class="material-symbols-outlined text-sm">picture_as_pdf</span> Direct Download A4 PDF
-        </button>
-      </div>
-
-      <!-- Stock Bill PDF -->
-      <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-        <div>
-          <span class="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">Landscape 1-Page</span>
-          <h4 class="font-bold text-sm text-gray-900 mt-2">Stock Register Form V</h4>
-          <p class="text-xs text-gray-500 mt-1">Direct single-click A4 PDF download fitting the full monthly stock ledger on 1 landscape sheet.</p>
-        </div>
-        <button onclick="exportDirectPdf('stock')" class="mt-4 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center gap-1.5 transition">
-          <span class="material-symbols-outlined text-sm">picture_as_pdf</span> Direct Download A4 PDF
-        </button>
-      </div>
-
-      <!-- Fuel Bill PDF -->
-      <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
-        <div>
-          <span class="text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded">Portrait 1-Page</span>
-          <h4 class="font-bold text-sm text-gray-900 mt-2">Fuel Bill Official Register</h4>
-          <p class="text-xs text-gray-500 mt-1">Direct single-click A4 PDF download formatted exactly to the uploaded Chapra ICDS Bengali form.</p>
-        </div>
-        <button onclick="exportDirectPdf('fuel')" class="mt-4 bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold py-2 rounded-lg flex items-center justify-center gap-1.5 transition">
-          <span class="material-symbols-outlined text-sm">picture_as_pdf</span> Direct Download A4 PDF
-        </button>
-      </div>
-    </div>
-
-    <!-- Hidden Printable Voucher Containers for direct html2pdf generation -->
-    <div id="print-templates-container" class="hidden">
-      <!-- FUEL REGISTER TEMPLATE (Matching uploaded image) -->
-      <div id="fuel-pdf-template" class="p-6 bg-white font-bengali text-gray-900 text-xs" style="width: 210mm;">
-        <div class="text-center space-y-1 border-b pb-2">
-          <h2 class="text-base font-bold">চাপড়া সুসংহত শিশু বিকাশ সেবা প্রকল্প</h2>
-          <h3 class="text-sm font-bold border-b border-black inline-block pb-0.5">অঙ্গনওয়াড়ী কেন্দ্রের জ্বালানী খরচের বিল বহি</h3>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-[11px] py-2 border-b">
-          <div><strong>কেন্দ্রের নাম ও নং:</strong> <span id="pdf-fuel-cname">Dakshin Para Anganwadi Center (No. 402)</span></div>
-          <div class="text-right"><strong>11 Digit Code:</strong> <span class="font-mono" id="pdf-fuel-ccode">19336040201</span></div>
-          <div><strong>গ্রাম পঞ্চায়েত:</strong> <span id="pdf-fuel-gp">Ward No. 12 GP</span></div>
-          <div class="text-right"><strong>মাস ও সাল:</strong> <span id="pdf-fuel-month">October 2026</span></div>
-        </div>
-        <table class="w-full text-[10px] font-mono border-collapse border border-gray-400 mt-3 text-center">
-          <thead>
-            <tr class="bg-gray-100 border-b border-gray-400">
-              <th rowspan="2" class="border border-gray-400 p-1">তারিখ</th>
-              <th rowspan="2" class="border border-gray-400 p-1">গর্ভবতী</th>
-              <th rowspan="2" class="border border-gray-400 p-1">প্রসূতি</th>
-              <th rowspan="2" class="border border-gray-400 p-1">সাধারণ শিশু</th>
-              <th rowspan="2" class="border border-gray-400 p-1">সর্বমোট প্রাপক</th>
-              <th colspan="4" class="border border-gray-400 p-1">জ্বালানী</th>
-              <th colspan="4" class="border border-gray-400 p-1">মসলা</th>
-              <th colspan="2" class="border border-gray-400 p-1">মোট জ্বালানী + মসলা</th>
-            </tr>
-            <tr class="bg-gray-50 border-b border-gray-400 text-[8.5px]">
-              <th class="border border-gray-400">১-৩০ (৩২/-)</th><th class="border border-gray-400">৩১-৫০ (৪৩/-)</th><th class="border border-gray-400">৫১-৭০ (৫৩/-)</th><th class="border border-gray-400">৭১+ (৬০/-)</th>
-              <th class="border border-gray-400">১-৩০ (.৯০)</th><th class="border border-gray-400">৩১-৫০ (.৯৫)</th><th class="border border-gray-400">৫১-৭০ (১.০৫)</th><th class="border border-gray-400">৭১+ (১.১৫)</th>
-              <th class="border border-gray-400">টাকা</th><th class="border border-gray-400">পয়সা</th>
-            </tr>
-          </thead>
-          <tbody id="pdf-fuel-tbody" class="divide-y divide-gray-300"></tbody>
-          <tfoot id="pdf-fuel-tfoot" class="font-bold bg-gray-100 border-t-2 border-gray-400"></tfoot>
-        </table>
-        <div class="mt-4 pt-2 border-t text-[10.5px] space-y-2">
-          <p>আমি অত্র মাসের জ্বালানী উক্ত কেন্দ্রে সরবরাহ করিয়াছি এবং মূল্য বুঝিয়া পাইলাম।</p>
-          <div class="flex justify-between pt-6 text-[10px]">
-            <div>জ্বালানী সরবরাহকারীর স্বাক্ষর ও তারিখ</div>
-            <div>অঙ্গনওয়াড়ী কর্মীর স্বাক্ষর ও তারিখ</div>
-            <div>মুখ্যসেবিকার স্বাক্ষর ও তারিখ</div>
-            <div>Child Development Project Officer<br/>Chapra ICDS Project, Nadia</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- ADD / EDIT INVENTORY MOVEMENT MODAL -->
-<div id="tx-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-  <div class="bg-white rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl">
-    <div class="flex items-center justify-between border-b pb-2">
-      <h3 id="modal-title" class="font-bold text-sm text-gray-900">Add Stock Transaction</h3>
-      <button onclick="closeTxModal()" class="text-gray-400 hover:text-gray-600">✕</button>
-    </div>
-    <input type="hidden" id="tx-edit-id" value=""/>
-    <div class="space-y-3 text-xs">
-      <div>
-        <label class="block font-semibold text-gray-700 mb-1">Transaction Date</label>
-        <input type="date" id="tx-date" class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:outline-emerald-700 bg-white"/>
-      </div>
-      <div>
-        <label class="block font-semibold text-gray-700 mb-1">Transaction Type</label>
-        <select id="tx-type" class="w-full border border-gray-300 rounded px-2.5 py-1.5 focus:outline-emerald-700 bg-white">
-          <option value="receivable">Receivable (+)</option>
-          <option value="borrowing">Borrowing (+)</option>
-          <option value="return_lending">Return of Lending (+)</option>
-          <option value="lending">Lending (-)</option>
-          <option value="return_borrowing">Return of Borrowing (-)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block font-semibold text-gray-700 mb-1">Particulars / Center / Challan #</label>
-        <input type="text" id="tx-remarks" placeholder="e.g. Challan #CH-8821 or AWC-403" class="w-full border border-gray-300 rounded px-2.5 py-1.5"/>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div><label class="block font-semibold mb-1">Rice (kg)</label><input type="number" step="0.001" min="0" id="tx-rice" value="0.000" class="w-full border rounded px-2 py-1 font-mono"/></div>
-        <div><label class="block font-semibold mb-1">Dal (kg)</label><input type="number" step="0.001" min="0" id="tx-dal" value="0.000" class="w-full border rounded px-2 py-1 font-mono"/></div>
-        <div><label class="block font-semibold mb-1">Salt (kg)</label><input type="number" step="0.001" min="0" id="tx-salt" value="0.000" class="w-full border rounded px-2 py-1 font-mono"/></div>
-        <div><label class="block font-semibold mb-1">Oil (kg)</label><input type="number" step="0.001" min="0" id="tx-oil" value="0.000" class="w-full border rounded px-2 py-1 font-mono"/></div>
-      </div>
-    </div>
-    <div class="flex justify-end gap-2 pt-2 border-t">
-      <button onclick="closeTxModal()" class="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded">Cancel</button>
-      <button onclick="saveTxEntry()" class="px-4 py-1.5 text-xs font-bold text-white bg-emerald-800 hover:bg-emerald-900 rounded">Save Entry</button>
-    </div>
-  </div>
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold text-base shadow-sm">402</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="font-bold text-base text-slate-900" id="header-cname">Dakshin Para Anganwadi Centre</h1>
+<span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded border border-emerald-200 font-mono" id="header-awc-code">11-Digit: 19336040201</span>
 </div>
-
-<!-- JAVASCRIPT APPLICATION CORE -->
+<p class="text-xs text-slate-500">Integrated Child Development Services (ICDS) • Department of Women &amp; Child Development</p>
+</div>
+</div>
+<!-- MONTH PICKER & DIRECT DOWNLOAD BUTTON -->
+<div class="flex items-center gap-2.5">
+<div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700">
+<span class="material-symbols-outlined text-base text-slate-500">calendar_month</span>
+<select class="bg-transparent font-semibold focus:outline-none cursor-pointer" id="global-month-picker" onchange="changeCalendarMonth(this.value)">
+<option value="6-2026">June 2026 (30 Days)</option>
+<option value="7-2026">July 2026 (31 Days)</option>
+<option value="8-2026">August 2026 (31 Days)</option>
+<option value="9-2026">September 2026 (30 Days)</option>
+<option selected="" value="10-2026">October 2026 (31 Days)</option>
+<option value="11-2026">November 2026 (30 Days)</option>
+<option value="12-2026">December 2026 (31 Days)</option>
+</select>
+</div>
+<button class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold p-2 rounded-lg border border-slate-200 transition" onclick="window.print()" title="Print Current View">
+<span class="material-symbols-outlined text-base">print</span>
+</button>
+</div>
+</header>
+<!-- 6-TAB NAVIGATION -->
+<nav class="bg-slate-900 text-white px-4 flex gap-1 text-xs font-medium border-b border-slate-800 overflow-x-auto shadow-inner">
+<button class="px-4 py-2.5 border-b-2 border-emerald-400 text-emerald-300 font-bold flex items-center gap-1.5 transition" id="nav-tab-1" onclick="switchTab(1)">
+<span class="material-symbols-outlined text-base">badge</span> 1. Data Entry
+    </button>
+<button class="px-4 py-2.5 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-1.5 transition text-slate-400" id="nav-tab-2" onclick="switchTab(2)">
+<span class="material-symbols-outlined text-base">currency_rupee</span> 2. Rate Chart
+    </button>
+<button class="px-4 py-2.5 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-1.5 transition text-slate-400" id="nav-tab-3" onclick="switchTab(3)">
+<span class="material-symbols-outlined text-base">receipt_long</span> 3. Vegetable Bill
+    </button>
+<button class="px-4 py-2.5 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-1.5 transition text-slate-400" id="nav-tab-4" onclick="switchTab(4)">
+<span class="material-symbols-outlined text-base">inventory_2</span> 4. Stock Register
+    </button>
+<button class="px-4 py-2.5 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-1.5 transition text-slate-400" id="nav-tab-5" onclick="switchTab(5)">
+<span class="material-symbols-outlined text-base">local_fire_department</span> 5. Fuel Bill
+    </button>
+<button class="px-4 py-2.5 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-1.5 transition text-slate-400" id="nav-tab-6" onclick="switchTab(6)">
+<span class="material-symbols-outlined text-base">download_for_offline</span> 6. Download Center
+    </button>
+</nav>
+<!-- MAIN VIEW CONTAINER -->
+<main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+<!-- ========================================================================= -->
+<!-- TAB 1: DATA ENTRY -->
+<!-- ========================================================================= -->
+<section class="tab-module space-y-5" id="module-1">
+<!-- CENTER PROFILE -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<h2 class="text-xs font-bold tracking-wider text-slate-800 uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-700 text-base">storefront</span> Centre Profile (Anganwadi Details)
+          </h2>
+<span class="text-[11px] font-semibold text-slate-500 font-mono">Profile Auto-Saved</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3.5 text-xs">
+<div>
+<label class="block font-semibold text-slate-600 mb-1">Centre Name</label>
+<input class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 focus:bg-white focus:outline-emerald-700 font-medium" id="prof-cname" oninput="updateProfileMeta()" type="text" value="Dakshin Para Anganwadi Centre"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-600 mb-1">Centre No.</label>
+<input class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium" id="prof-cno" type="text" value="402"/>
+</div>
+<div>
+<div class="flex items-center justify-between mb-1">
+<label class="block font-semibold text-slate-600">AWC Code (Strict 11 Digits)</label>
+<span class="text-[10px] bg-emerald-50 text-emerald-800 px-1.5 rounded font-bold font-mono">Strict 11-Digit Standard</span>
+</div>
+<input class="w-full bg-slate-50 border border-emerald-400 rounded-lg px-2.5 py-1.5 font-mono font-bold text-slate-900 focus:bg-white focus:outline-emerald-700" id="prof-awc-code" maxlength="11" oninput="updateProfileMeta()" pattern="[0-9]{11}" type="text" value="19336040201"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-600 mb-1">Project Name</label>
+<input class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium" id="prof-pname" type="text" value="Integrated Child Development Project"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-600 mb-1">District</label>
+<input class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium" id="prof-dist" type="text" value="South 24 Parganas / Nadia"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-600 mb-1">Sector Name</label>
+<input class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium" id="prof-sec" type="text" value="Sector 4"/>
+</div>
+<div class="md:col-span-2">
+<label class="block font-semibold text-slate-600 mb-1">Gram Panchayat / Ward No.</label>
+<input class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium" id="prof-gp" type="text" value="Ward No. 12"/>
+</div>
+</div>
+</div>
+<!-- ONE-TIME BATCH INPUT -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-xs font-bold tracking-wider text-slate-800 uppercase">One-Time Batch Input (Default Value for Open Days = 0)</h3>
+<p class="text-[11px] text-slate-500">Quickly apply default headcounts to all open working days in the month.</p>
+</div>
+<span class="text-xs bg-emerald-50 text-emerald-800 font-bold px-3 py-1 rounded-full font-mono border border-emerald-200">
+            Batch Total: <span id="batch-total-indicator">0</span>
+</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Pregnant Women (PW)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="batch-pw" min="0" oninput="calcBatchIndicator()" type="number" value="0"/>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Lactating Mothers (LM)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="batch-lm" min="0" oninput="calcBatchIndicator()" type="number" value="0"/>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Normal Children (6m - 6y)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="batch-child" min="0" oninput="calcBatchIndicator()" type="number" value="0"/>
+</div>
+<div class="bg-amber-50/60 p-2.5 rounded-lg border border-amber-200">
+<label class="block font-semibold text-amber-900 mb-1">SAM Children (Severe)</label>
+<input class="w-full bg-white border border-amber-300 text-amber-900 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-amber-700" id="batch-sam" min="0" oninput="calcBatchIndicator()" type="number" value="0"/>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2.5 pt-1">
+<button class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition" onclick="applyBatchToOpenDays()">
+<span class="material-symbols-outlined text-sm">done_all</span> Apply to All Open Days
+          </button>
+<button class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition" onclick="resetAllDefaultsToZero()">
+<span class="material-symbols-outlined text-sm">restart_alt</span> Reset Defaults to Zero (0)
+          </button>
+</div>
+</div>
+<!-- DAILY ATTENDANCE & FEEDING REGISTER -->
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+<div>
+<h3 class="text-xs font-bold tracking-wider text-slate-900 uppercase">Daily Attendance &amp; Feeding Register</h3>
+<p class="text-[11px] text-slate-500">Calendar auto-configured for active month. Mon/Wed/Fri = Type A, Tue/Thu/Sat = Type B, Sundays = Closed.</p>
+</div>
+<span class="text-xs font-bold text-slate-700 font-mono bg-slate-100 px-2.5 py-1 rounded" id="open-days-counter">Open Days: 27 / 31</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-xs text-left">
+<thead class="bg-slate-50 border-b border-slate-200 text-slate-700 uppercase font-semibold text-[11px]">
+<tr>
+<th class="py-2.5 px-3">Date</th>
+<th class="py-2.5 px-2">Day</th>
+<th class="py-2.5 px-2">Status</th>
+<th class="py-2.5 px-2 text-center">Group</th>
+<th class="py-2.5 px-2 text-right">PW</th>
+<th class="py-2.5 px-2 text-right">LM</th>
+<th class="py-2.5 px-2 text-right">Child</th>
+<th class="py-2.5 px-2 text-right text-amber-900 bg-amber-50/40">SAM</th>
+<th class="py-2.5 px-3 text-right font-bold text-emerald-950 bg-emerald-50/40">Total</th>
+<th class="py-2.5 px-2 text-center">Copy</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 font-mono" id="attendance-tbody">
+<!-- Dynamically populated -->
+</tbody>
+<tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold font-mono text-slate-900">
+<tr>
+<td class="py-2.5 px-3" colspan="4">Monthly Grand Total</td>
+<td class="py-2.5 px-2 text-right" id="tot-pw">0</td>
+<td class="py-2.5 px-2 text-right" id="tot-lm">0</td>
+<td class="py-2.5 px-2 text-right" id="tot-child">0</td>
+<td class="py-2.5 px-2 text-right text-amber-900" id="tot-sam">0</td>
+<td class="py-2.5 px-3 text-right text-emerald-900 text-sm" id="tot-gross">0</td>
+<td></td>
+</tr>
+</tfoot>
+</table>
+</div>
+</div>
+<!-- RATION GROUP SUMMARY BREAKDOWN -->
+<div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-2">
+<h4 class="text-xs font-bold tracking-wider text-slate-800 uppercase">Ration Group Summary Breakdown</h4>
+<div class="overflow-x-auto">
+<table class="w-full text-xs font-mono">
+<thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+<tr>
+<th class="py-2 px-3 text-left">Ration Type</th>
+<th class="py-2 px-2 text-center">Scheduled Days</th>
+<th class="py-2 px-2 text-center">Open Days</th>
+<th class="py-2 px-2 text-right">Mothers (PW+LM)</th>
+<th class="py-2 px-2 text-right">Children</th>
+<th class="py-2 px-2 text-right text-amber-900">SAM Children</th>
+<th class="py-2 px-3 text-right font-bold text-slate-900">Total Beneficiaries</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="group-summary-tbody">
+<!-- Dynamically generated -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 2: RATE CHART MASTER -->
+<!-- ========================================================================= -->
+<section class="tab-module hidden space-y-5" id="module-2">
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+<div>
+<h2 class="text-xs font-bold tracking-wider text-slate-800 uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-700 text-base">currency_rupee</span> Rate Chart &amp; Feeding Norms Master
+            </h2>
+<p class="text-[11px] text-slate-500">Government Notification Norms. Financial items take 2 decimals; Grain items take 3 decimals (kg).</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition" onclick="copyRatesAcrossGroups()">
+<span class="material-symbols-outlined text-sm">content_copy</span> <span id="copy-rate-label">Copy Group A → B</span>
+</button>
+<button class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition" onclick="resetDefaultRates()">
+              Reset Official Norms
+            </button>
+</div>
+</div>
+<!-- GROUP SELECTOR -->
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-800 text-white shadow-sm transition" id="rate-btn-grpA" onclick="setRateGroup('A')">
+            Group A (Mon / Wed / Fri Menu)
+          </button>
+<button class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition" id="rate-btn-grpB" onclick="setRateGroup('B')">
+            Group B (Tue / Thu / Sat Menu)
+          </button>
+</div>
+<!-- PART 1: FINANCIAL RATES -->
+<div class="space-y-2 pt-2">
+<h3 class="text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-amber-700">payments</span> Part 1: Financial Head Rates (₹ / head, 2 Decimals)
+          </h3>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs">
+<thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+<tr>
+<th class="py-2.5 px-3 text-left">Commodity Head</th>
+<th class="py-2.5 px-3 text-right">Mother (PW+LM) (₹)</th>
+<th class="py-2.5 px-3 text-right">Normal Children (₹)</th>
+<th class="py-2.5 px-3 text-right text-amber-900">SAM Children (₹)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 font-mono" id="rates-fin-tbody">
+<!-- Dynamically rendered -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- PART 2: RATION GRAIN NORMS -->
+<div class="space-y-2 pt-2">
+<h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-emerald-700">scale</span> Part 2: Ration &amp; Grain Norms (kg / head, 3 Decimals)
+          </h3>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs">
+<thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+<tr>
+<th class="py-2.5 px-3 text-left">Grains / Commodities</th>
+<th class="py-2.5 px-3 text-right">Mother (PW+LM) (kg)</th>
+<th class="py-2.5 px-3 text-right">Normal Children (kg)</th>
+<th class="py-2.5 px-3 text-right text-emerald-900">SAM Children (kg)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 font-mono" id="rates-rat-tbody">
+<!-- Dynamically rendered -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- PART 3: FUEL & CONDIMENTS SLAB TIERS -->
+<div class="space-y-2 pt-2">
+<h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-slate-700">local_fire_department</span> Part 3: Official Fuel &amp; Condiments Slab Tier Table
+          </h3>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs font-mono">
+<thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+<tr>
+<th class="py-2.5 px-3 text-left">Recipient Slab Headcount</th>
+<th class="py-2.5 px-3 text-right">Fuel Rate (₹)</th>
+<th class="py-2.5 px-3 text-right">Masala / Condiments (₹)</th>
+<th class="py-2.5 px-3 text-right font-bold text-emerald-900">Daily Combined Rate (₹)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-slate-50">
+<td class="py-2 px-3 font-semibold text-slate-800">1 – 30 Recipients</td>
+<td class="py-2 px-3 text-right">₹ 32.00</td>
+<td class="py-2 px-3 text-right">₹ 0.90</td>
+<td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 32.90</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="py-2 px-3 font-semibold text-slate-800">31 – 50 Recipients</td>
+<td class="py-2 px-3 text-right">₹ 43.00</td>
+<td class="py-2 px-3 text-right">₹ 0.95</td>
+<td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 43.95</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="py-2 px-3 font-semibold text-slate-800">51 – 70 Recipients</td>
+<td class="py-2 px-3 text-right">₹ 53.00</td>
+<td class="py-2 px-3 text-right">₹ 1.05</td>
+<td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 54.05</td>
+</tr>
+<tr class="hover:bg-slate-50">
+<td class="py-2 px-3 font-semibold text-slate-800">71+ Recipients</td>
+<td class="py-2 px-3 text-right">₹ 60.00</td>
+<td class="py-2 px-3 text-right">₹ 1.15</td>
+<td class="py-2 px-3 text-right font-bold text-emerald-900">₹ 61.15</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 3: VEGETABLE BILL (SIMPLE TABLE FORMAT) -->
+<!-- ========================================================================= -->
+<section class="tab-module hidden space-y-5" id="module-3">
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4" id="veg-bill-printable-card">
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+<div>
+<h2 class="text-xs font-bold tracking-wider text-slate-800 uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-amber-700 text-base">receipt_long</span> 3. Vegetable Bill Daily Calculations
+            </h2>
+<p class="text-[11px] text-slate-500">Columns: Date, Mother, Children, SAM, Total, Egg, Potato, Vegetable, Sattu, Total Expenses.</p>
+</div>
+<!-- SATTU TOGGLE OPTION -->
+<label class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer text-xs font-semibold text-slate-700">
+<input checked="" class="rounded text-emerald-700 focus:ring-emerald-700" id="toggle-sattu-inc" onchange="renderVegBill()" type="checkbox"/>
+<span>Include Sattu in Total Cost</span>
+</label>
+</div>
+<!-- SIMPLE DAILY EXPENSE TABLE -->
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs font-mono text-left">
+<thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 uppercase text-[11px]">
+<tr id="veg-thead-tr">
+<!-- Dynamically configured depending on Sattu toggle position -->
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="veg-tbody">
+<!-- Dynamically populated -->
+</tbody>
+<tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-900" id="veg-tfoot">
+<!-- Sum of each column -->
+</tfoot>
+</table>
+</div>
+<!-- GROUP A AND GROUP B SUMMARY TABLE -->
+<div class="pt-2 space-y-2">
+<h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Group A &amp; Group B Summary (Headcounts &amp; Itemized Expenses)</h4>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs font-mono">
+<thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+<tr>
+<th class="py-2 px-3 text-left">Menu Group</th>
+<th class="py-2 px-2 text-center">Open Days</th>
+<th class="py-2 px-2 text-right">Mothers</th>
+<th class="py-2 px-2 text-right">Children</th>
+<th class="py-2 px-2 text-right">Egg (₹)</th>
+<th class="py-2 px-2 text-right">Potato (₹)</th>
+<th class="py-2 px-2 text-right">Veg (₹)</th>
+<th class="py-2 px-2 text-right">Sattu (₹)</th>
+<th class="py-2 px-3 text-right font-bold text-emerald-950">Subtotal (₹)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="veg-group-summary-tbody">
+<!-- Dynamically generated -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 4: STOCK REGISTER (FORM V DAILY REGISTER & LEDGER) -->
+<!-- ========================================================================= -->
+<section class="tab-module hidden space-y-5" id="module-4">
+<!-- REPORTING MONTH SELECTION BAR (SYNCHRONIZED WITH GLOBAL PICKER) -->
+<div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-700 text-lg">calendar_month</span>
+<div>
+<h3 class="text-xs font-bold text-slate-900 uppercase">Stock Register Reporting Month</h3>
+<p class="text-[11px] text-slate-500">Switch active month directly for stock records and Form V calculations.</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<label class="text-xs font-semibold text-slate-600">Reporting Month:</label>
+<div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800">
+<select class="bg-transparent font-semibold focus:outline-none cursor-pointer" id="stock-month-picker" onchange="changeCalendarMonth(this.value)">
+<option value="6-2026">June 2026 (30 Days)</option>
+<option value="7-2026">July 2026 (31 Days)</option>
+<option value="8-2026">August 2026 (31 Days)</option>
+<option value="9-2026">September 2026 (30 Days)</option>
+<option selected="" value="10-2026">October 2026 (31 Days)</option>
+<option value="11-2026">November 2026 (30 Days)</option>
+<option value="12-2026">December 2026 (31 Days)</option>
+</select>
+</div>
+</div>
+</div>
+<!-- 1. OPENING STOCK DATA ENTRY -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3">
+<div class="flex items-center justify-between border-b border-slate-100 pb-2">
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">1. Previous Month Opening Balance (in kg)</h3>
+<span class="text-[11px] text-slate-500">Editable • Auto-saves and updates Form V ledger immediately</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Fortified Rice (kg)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="op-rice" min="0" oninput="saveOpeningStock()" step="0.001" type="number" value="0.000"/>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Dal / Pulses (kg)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="op-dal" min="0" oninput="saveOpeningStock()" step="0.001" type="number" value="0.000"/>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Iodized Salt (kg)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="op-salt" min="0" oninput="saveOpeningStock()" step="0.001" type="number" value="0.000"/>
+</div>
+<div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+<label class="block font-semibold text-slate-600 mb-1">Mustard Oil (kg)</label>
+<input class="w-full bg-white border border-slate-300 rounded px-2.5 py-1 text-sm font-bold font-mono focus:outline-emerald-700" id="op-oil" min="0" oninput="saveOpeningStock()" step="0.001" type="number" value="0.000"/>
+</div>
+</div>
+</div>
+<!-- 2. STOCK ADJUSTMENT TRANSACTIONS (5 CATEGORIES) -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">2. Stock Transactions (Receivables, Lendings &amp; Borrowings)</h3>
+<p class="text-[11px] text-slate-500">Record stock transfers with verified inward and outward deduction categories.</p>
+</div>
+<button class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg flex items-center gap-1 shadow-sm transition" onclick="openTxModal()">
+<span class="material-symbols-outlined text-sm">add_circle</span> Add Transaction
+          </button>
+</div>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs font-mono">
+<thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+<tr>
+<th class="py-2 px-3 text-left">Date</th>
+<th class="py-2 px-2 text-left">Type</th>
+<th class="py-2 px-2 text-left">Challan / Center Remarks</th>
+<th class="py-2 px-2 text-right">Rice (kg)</th>
+<th class="py-2 px-2 text-right">Dal (kg)</th>
+<th class="py-2 px-2 text-right">Salt (kg)</th>
+<th class="py-2 px-2 text-right">Oil (kg)</th>
+<th class="py-2 px-2 text-center">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="tx-tbody">
+<!-- Dynamically rendered or clean empty state -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- 3. FORM V DAILY CONSUMPTION REGISTER & BALANCE LEDGER -->
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-3" id="stock-bill-printable-card">
+<div class="flex items-center justify-between border-b border-slate-100 pb-2">
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">3. Form V Daily Register &amp; Stock Ledger</h3>
+<p class="text-[11px] text-slate-500">Columns: Date, Mother, Children, SAM, Total • Subsections: Receivable, Consumption, Balance</p>
+</div>
+<span class="text-xs font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+            Ceiling Rule: If Balance &lt; Consumption → Balance Consumed, Bal = 0.000
+          </span>
+</div>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-[11px] font-mono text-left">
+<thead class="bg-slate-50 text-slate-700">
+<tr>
+<th class="py-2 px-2 border-r border-slate-200" rowspan="2">Date</th>
+<th class="py-2 px-1 text-right" rowspan="2">Mother</th>
+<th class="py-2 px-1 text-right" rowspan="2">Children</th>
+<th class="py-2 px-1 text-right" rowspan="2">SAM</th>
+<th class="py-2 px-1 text-right border-r border-slate-200 font-bold" rowspan="2">Total</th>
+<th class="py-1 px-1 text-center border-r border-slate-200 bg-emerald-50/50" colspan="3">Rice (kg)</th>
+<th class="py-1 px-1 text-center border-r border-slate-200 bg-amber-50/50" colspan="3">Dal (kg)</th>
+<th class="py-1 px-1 text-center border-r border-slate-200 bg-emerald-50/50" colspan="3">Salt (kg)</th>
+<th class="py-1 px-1 text-center bg-amber-50/50" colspan="3">Oil (kg)</th>
+</tr>
+<tr class="text-[10px] text-slate-500 border-b border-slate-200">
+<th class="py-1 px-1 text-right">Rec</th><th class="py-1 px-1 text-right">Cons</th><th class="py-1 px-1 text-right border-r border-slate-200 font-bold text-slate-900">Bal</th>
+<th class="py-1 px-1 text-right">Rec</th><th class="py-1 px-1 text-right">Cons</th><th class="py-1 px-1 text-right border-r border-slate-200 font-bold text-slate-900">Bal</th>
+<th class="py-1 px-1 text-right">Rec</th><th class="py-1 px-1 text-right">Cons</th><th class="py-1 px-1 text-right border-r border-slate-200 font-bold text-slate-900">Bal</th>
+<th class="py-1 px-1 text-right">Rec</th><th class="py-1 px-1 text-right">Cons</th><th class="py-1 px-1 text-right font-bold text-slate-900">Bal</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="form-v-tbody">
+<!-- Dynamically generated rows -->
+</tbody>
+<tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-900" id="form-v-tfoot">
+<!-- Summary totals -->
+</tfoot>
+</table>
+</div>
+<!-- GROUP A AND B STOCK CONSUMPTION BREAKDOWN -->
+<div class="pt-2 space-y-2">
+<h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Group A &amp; Group B Stock Consumption Breakdown</h4>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs font-mono">
+<thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+<tr>
+<th class="py-2 px-3 text-left">Ration Menu</th>
+<th class="py-2 px-2 text-center">Open Days</th>
+<th class="py-2 px-2 text-right">Mothers</th>
+<th class="py-2 px-2 text-right">Children</th>
+<th class="py-2 px-2 text-right">Rice Consumed (kg)</th>
+<th class="py-2 px-2 text-right">Dal Consumed (kg)</th>
+<th class="py-2 px-2 text-right">Salt Consumed (kg)</th>
+<th class="py-2 px-3 text-right">Oil Consumed (kg)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="stock-group-summary-tbody">
+<!-- Dynamically rendered -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 5: FUEL BILL (SIMPLE TABLE FORMAT) -->
+<!-- ========================================================================= -->
+<section class="tab-module hidden space-y-5" id="module-5">
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4" id="fuel-bill-printable-card">
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<div>
+<h2 class="text-xs font-bold tracking-wider text-slate-800 uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-orange-600 text-base">local_fire_department</span> 5. Fuel &amp; Condiments Bill (Simple Table)
+            </h2>
+<p class="text-[11px] text-slate-500">Columns: Date, PW, LM, Children, SAM, Total, Fuel Charge, Condiment Charge, Total. Last row shows column sum.</p>
+</div>
+<span class="text-xs font-mono font-bold bg-orange-50 text-orange-900 border border-orange-200 px-3 py-1 rounded">
+            Official 4-Slab Auto-Applied
+          </span>
+</div>
+<div class="overflow-x-auto border border-slate-200 rounded-lg">
+<table class="w-full text-xs font-mono text-left">
+<thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 uppercase text-[11px]">
+<tr>
+<th class="py-2.5 px-3">Date</th>
+<th class="py-2.5 px-2 text-right">PW</th>
+<th class="py-2.5 px-2 text-right">LM</th>
+<th class="py-2.5 px-2 text-right">Children</th>
+<th class="py-2.5 px-2 text-right text-amber-900">SAM</th>
+<th class="py-2.5 px-2 text-right font-bold text-slate-900">Total Heads</th>
+<th class="py-2.5 px-2 text-right">Fuel Charge (₹)</th>
+<th class="py-2.5 px-2 text-right">Condiments (₹)</th>
+<th class="py-2.5 px-3 text-right font-bold text-emerald-950">Total (₹)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100" id="fuel-tbody">
+<!-- Dynamically populated -->
+</tbody>
+<tfoot class="bg-slate-100 border-t-2 border-slate-300 font-bold text-slate-900" id="fuel-tfoot">
+<!-- Sum of each column -->
+</tfoot>
+</table>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- TAB 6: DOWNLOAD CENTER -->
+<!-- ========================================================================= -->
+<section class="tab-module hidden space-y-5" id="module-6">
+<div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<div>
+<span class="text-xs bg-emerald-700 text-emerald-100 font-bold px-2.5 py-0.5 rounded uppercase tracking-wide">Download &amp; Export Center</span>
+<h2 class="text-lg font-bold mt-1">Direct PDF Document Download Center</h2>
+<p class="text-xs text-emerald-100 mt-0.5">Generate and save clean, official PDF documents directly to your computer without printer dialogs.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- 1. VEGETABLE BILL A4 PRINT / PDF -->
+<div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold mb-2">
+<span class="material-symbols-outlined text-xl">receipt_long</span>
+</div>
+<h3 class="text-sm font-bold text-slate-900">1. Vegetable Bill (Portrait 2-Page)</h3>
+<p class="text-xs text-slate-500 mt-1">Official SNP bill voucher with vendor receipts, worker declaration and 31-day daily expense statement.</p>
+</div>
+<button class="w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition shadow-sm" onclick="downloadDirectPdf('veg')">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span> Download Vegetable Bill (PDF)
+          </button>
+</div>
+<!-- 2. STOCK REGISTER FORM V PDF -->
+<div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-800 flex items-center justify-center font-bold mb-2">
+<span class="material-symbols-outlined text-xl">inventory_2</span>
+</div>
+<h3 class="text-sm font-bold text-slate-900">2. Stock Bill / Form V (Landscape)</h3>
+<p class="text-xs text-slate-500 mt-1">Complete monthly grain register with opening stock, daily receivables, consumption ceiling logic, and balance ledger.</p>
+</div>
+<button class="w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition shadow-sm" onclick="downloadDirectPdf('stock')">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span> Download Stock Form V (PDF Landscape)
+          </button>
+</div>
+<!-- 3. FUEL BILL REGISTER PDF -->
+<div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
+<div>
+<div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-800 flex items-center justify-center font-bold mb-2">
+<span class="material-symbols-outlined text-xl">local_fire_department</span>
+</div>
+<h3 class="text-sm font-bold text-slate-900">3. Fuel Bill Register (Portrait)</h3>
+<p class="text-xs text-slate-500 mt-1">Official format with attendance breakdown, 4-tier slab rates, total expenditures, and official signatures.</p>
+</div>
+<button class="w-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition shadow-sm" onclick="downloadDirectPdf('fuel')">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span> Download Fuel Bill (PDF)
+          </button>
+</div>
+</div>
+</section>
+</main>
+<!-- NON-BLOCKING IN-PAGE RATION GROUP SELECTOR MODAL -->
+<div class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4" id="group-modal">
+<div class="bg-white rounded-xl max-w-sm w-full p-5 space-y-4 shadow-xl border border-slate-200">
+<div class="flex items-center justify-between border-b pb-2">
+<h3 class="font-bold text-sm text-slate-900">Select Ration Menu Group</h3>
+<button class="text-slate-400 hover:text-slate-600" onclick="closeGroupModal()">✕</button>
+</div>
+<p class="text-xs text-slate-600">Choose the feeding schedule for <span class="font-bold text-slate-900" id="modal-date-label">Selected Date</span>:</p>
+<div class="grid grid-cols-2 gap-3 pt-1">
+<button class="p-3 rounded-lg border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 text-left transition" onclick="confirmGroupSelect('A')">
+<div class="font-bold text-xs text-emerald-900">Group A Menu</div>
+<div class="text-[10px] text-emerald-700">Mon / Wed / Fri (Full Egg)</div>
+</button>
+<button class="p-3 rounded-lg border-2 border-amber-600 bg-amber-50 hover:bg-amber-100 text-left transition" onclick="confirmGroupSelect('B')">
+<div class="font-bold text-xs text-amber-900">Group B Menu</div>
+<div class="text-[10px] text-amber-700">Tue / Thu / Sat (Half Egg)</div>
+</button>
+</div>
+</div>
+</div>
+<!-- ADD / EDIT STOCK TRANSACTION MODAL (5 UPDATED CATEGORIES) -->
+<div class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-center justify-center p-4" id="tx-modal">
+<div class="bg-white rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl border border-slate-200">
+<div class="flex items-center justify-between border-b pb-2">
+<h3 class="font-bold text-sm text-slate-900" id="tx-modal-title">Add Stock Transaction</h3>
+<button class="text-slate-400 hover:text-slate-600" onclick="closeTxModal()">✕</button>
+</div>
+<div class="space-y-3 text-xs">
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Transaction Date</label>
+<input class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-emerald-700" id="tx-date" type="date"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Transaction Type</label>
+<select class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-emerald-700 font-semibold" id="tx-type">
+<option value="receivables">Receivables (+)</option>
+<option value="lending">Lending (-)</option>
+<option value="return_of_lending">Return of Lending (+)</option>
+<option value="borrowing">Borrowing (+)</option>
+<option value="return_of_borrowing">Return of Borrowing (-)</option>
+</select>
+</div>
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Challan # / Center Remarks</label>
+<input class="w-full border border-slate-300 rounded px-2.5 py-1.5 focus:outline-emerald-700" id="tx-remarks" placeholder="e.g. Challan #402/26 or AWC-403" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-2 font-mono">
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Rice (kg)</label>
+<input class="w-full border border-slate-300 rounded px-2 py-1" id="tx-rice" min="0" step="0.001" type="number" value="0.000"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Dal (kg)</label>
+<input class="w-full border border-slate-300 rounded px-2 py-1" id="tx-dal" min="0" step="0.001" type="number" value="0.000"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Salt (kg)</label>
+<input class="w-full border border-slate-300 rounded px-2 py-1" id="tx-salt" min="0" step="0.001" type="number" value="0.000"/>
+</div>
+<div>
+<label class="block font-semibold text-slate-700 mb-1">Oil (kg)</label>
+<input class="w-full border border-slate-300 rounded px-2 py-1" id="tx-oil" min="0" step="0.001" type="number" value="0.000"/>
+</div>
+</div>
+</div>
+<div class="flex justify-end gap-2 pt-2 border-t">
+<button class="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded" onclick="closeTxModal()">Cancel</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded" onclick="saveStockTx()">Save Transaction</button>
+</div>
+</div>
+</div>
+<!-- JAVASCRIPT MASTER CONTROLLER -->
 <script>
-  let activeMonthKey = '10-2026', activeMonthName = 'October 2026', activeMonthDays = 31;
-  let activeRateTab = 'A';
-  let attendanceRoll = [];
+    /**
+     * GLOBAL SYSTEM STATE
+     */
+    let activeMonthKey = '10-2026';
+    let activeMonthDays = 31;
+    let activeMonthName = 'October 2026';
+    let currentRateGroup = 'A';
+    let pendingModalIndex = null;
 
-  const defaultRates = {
-    groupA: {
-      financial: { egg: 6.50, potato: 0.84, veg: 0.00, sattu: 0.00 },
-      financialNormal: { egg: 6.50, potato: 0.00, veg: 0.00, sattu: 1.67 },
-      financialSam: { egg: 0.00, potato: 0.00, veg: 0.00, sattu: 0.00 },
-      ration: { rice: 0.110, dal: 0.000, salt: 0.002, oil: 0.002 },
-      rationNormal: { rice: 0.050, dal: 0.000, salt: 0.002, oil: 0.002 },
-      rationSam: { rice: 0.000, dal: 0.000, salt: 0.000, oil: 0.000 }
-    },
-    groupB: {
-      financial: { egg: 6.50, potato: 1.40, veg: 0.23, sattu: 0.00 },
-      financialNormal: { egg: 3.25, potato: 0.98, veg: 0.11, sattu: 0.00 },
-      financialSam: { egg: 0.00, potato: 0.00, veg: 0.00, sattu: 0.00 },
-      ration: { rice: 0.075, dal: 0.030, salt: 0.002, oil: 0.002 },
-      rationNormal: { rice: 0.075, dal: 0.030, salt: 0.002, oil: 0.002 },
-      rationSam: { rice: 0.000, dal: 0.000, salt: 0.000, oil: 0.000 }
-    }
-  };
-
-  let rates = JSON.parse(localStorage.getItem('awc_rates_store')) || JSON.parse(JSON.stringify(defaultRates));
-
-  let inventoryMovements = [
-    { id: 'tx-1', date: '2026-10-06', type: 'receivable', remarks: 'Challan #CH-8821', rice: 100.0, dal: 30.0, salt: 5.0, oil: 10.0 },
-    { id: 'tx-2', date: '2026-10-20', type: 'receivable', remarks: 'Challan #CH-9044', rice: 100.0, dal: 30.0, salt: 0.0, oil: 10.0 }
-  ];
-
-  function initAttendanceRoll() {
-    attendanceRoll = [];
-    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    let dayOffset = 4; // October 2026 starts on Thursday
-    if (activeMonthKey === '6-2026') dayOffset = 1;
-    if (activeMonthKey === '7-2026') dayOffset = 3;
-    if (activeMonthKey === '8-2026') dayOffset = 6;
-    if (activeMonthKey === '9-2026') dayOffset = 2;
-    if (activeMonthKey === '11-2026') dayOffset = 0;
-    if (activeMonthKey === '12-2026') dayOffset = 2;
-
-    for (let i = 1; i <= activeMonthDays; i++) {
-      const wIdx = (dayOffset + (i - 1)) % 7;
-      const wName = weekdays[wIdx];
-      const isSun = (wName === 'Sun');
-      const dayStr = i < 10 ? '0' + i : '' + i;
-      attendanceRoll.push({
-        dateStr: `${dayStr} ${activeMonthName.split(' ')[0].substring(0, 3)}`,
-        dayNumber: i,
-        day: wName,
-        status: isSun ? 'Closed' : 'Open',
-        rationType: isSun ? '-' : ((wName === 'Mon' || wName === 'Wed' || wName === 'Fri') ? 'A' : 'B'),
-        pw: 0, lm: 0, child: 0, sam: 0
-      });
-    }
-  }
-
-  function renderAttendanceTable() {
-    const tbody = document.getElementById('attendance-tbody');
-    tbody.innerHTML = '';
-    let sumPw = 0, sumLm = 0, sumChild = 0, sumSam = 0, sumGross = 0, openCount = 0;
-    let schedA = 0, openA = 0, pwA = 0, lmA = 0, chA = 0, samA = 0;
-    let schedB = 0, openB = 0, pwB = 0, lmB = 0, chB = 0, samB = 0;
-
-    attendanceRoll.forEach((row, idx) => {
-      const isClosed = row.status === 'Closed';
-      const dayTotal = isClosed ? 0 : (row.pw + row.lm + row.child + row.sam);
-      if (row.day === 'Mon' || row.day === 'Wed' || row.day === 'Fri') schedA++;
-      if (row.day === 'Tue' || row.day === 'Thu' || row.day === 'Sat') schedB++;
-      if (!isClosed) {
-        openCount++; sumPw += row.pw; sumLm += row.lm; sumChild += row.child; sumSam += row.sam; sumGross += dayTotal;
-        if (row.rationType === 'A') { openA++; pwA += row.pw; lmA += row.lm; chA += row.child; samA += row.sam; }
-        else if (row.rationType === 'B') { openB++; pwB += row.pw; lmB += row.lm; chB += row.child; samB += row.sam; }
+    // Verified Rate Defaults
+    const defaultRates = {
+      groupA: {
+        financial: { egg: 6.50, potato: 0.84, veg: 0.00, sattu: 0.00 },
+        financialNormal: { egg: 6.50, potato: 0.00, veg: 0.00, sattu: 1.67 },
+        financialSam: { egg: 0.00, potato: 0.00, veg: 0.00, sattu: 0.00 },
+        ration: { rice: 0.110, dal: 0.000, salt: 0.002, oil: 0.002 },
+        rationNormal: { rice: 0.050, dal: 0.000, salt: 0.002, oil: 0.002 },
+        rationSam: { rice: 0.000, dal: 0.000, salt: 0.000, oil: 0.000 }
+      },
+      groupB: {
+        financial: { egg: 6.50, potato: 1.40, veg: 0.23, sattu: 0.00 },
+        financialNormal: { egg: 3.25, potato: 0.98, veg: 0.11, sattu: 0.00 },
+        financialSam: { egg: 0.00, potato: 0.00, veg: 0.00, sattu: 0.00 },
+        ration: { rice: 0.075, dal: 0.030, salt: 0.002, oil: 0.002 },
+        rationNormal: { rice: 0.075, dal: 0.030, salt: 0.002, oil: 0.002 },
+        rationSam: { rice: 0.000, dal: 0.000, salt: 0.000, oil: 0.000 }
       }
-      tbody.innerHTML += `
-        <tr class="${isClosed ? 'bg-red-50/50 text-red-700' : 'hover:bg-gray-50'}">
-          <td class="py-2 px-3 font-semibold">${row.dateStr}</td>
-          <td class="py-2 px-2 font-bold ${row.day === 'Sun' ? 'text-red-600' : ''}">${row.day}</td>
-          <td class="py-2 px-2"><button onclick="toggleDayStatus(${idx})" class="px-2 py-0.5 rounded text-[10px] font-bold ${isClosed ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'}">${row.status}</button></td>
-          <td class="py-2 px-2 text-center font-bold">${row.rationType !== '-' ? `<span class="px-2 py-0.5 rounded text-[10px] ${row.rationType === 'A' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${row.rationType}</span>` : '-'}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : `<input type="number" min="0" value="${row.pw}" onchange="updateAttendanceCell(${idx}, 'pw', this.value)" class="w-12 text-right border rounded px-1"/>`}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : `<input type="number" min="0" value="${row.lm}" onchange="updateAttendanceCell(${idx}, 'lm', this.value)" class="w-12 text-right border rounded px-1"/>`}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : `<input type="number" min="0" value="${row.child}" onchange="updateAttendanceCell(${idx}, 'child', this.value)" class="w-12 text-right border rounded px-1"/>`}</td>
-          <td class="py-2 px-2 text-right bg-amber-50/40">${isClosed ? '-' : `<input type="number" min="0" value="${row.sam}" onchange="updateAttendanceCell(${idx}, 'sam', this.value)" class="w-10 text-right border border-amber-300 rounded px-1 text-amber-900"/>`}</td>
-          <td class="py-2 px-3 text-right font-bold text-emerald-900 bg-emerald-50/30">${isClosed ? '-' : dayTotal}</td>
-          <td class="py-2 px-2 text-center">${isClosed ? '-' : `<button onclick="copyPreviousAttendance(${idx})" class="text-gray-400 hover:text-emerald-700" title="Copy from Previous"><span class="material-symbols-outlined text-[15px]">content_copy</span></button>`}</td>
-        </tr>`;
-    });
-
-    document.getElementById('open-days-count').innerText = openCount;
-    document.getElementById('total-days-count').innerText = activeMonthDays;
-    document.getElementById('tot-pw').innerText = sumPw; document.getElementById('tot-lm').innerText = sumLm;
-    document.getElementById('tot-child').innerText = sumChild; document.getElementById('tot-sam').innerText = sumSam;
-    document.getElementById('tot-gross').innerText = sumGross;
-
-    const grossA = pwA + lmA + chA + samA, grossB = pwB + lmB + chB + samB;
-    document.getElementById('ration-summary-tbody').innerHTML = `
-      <tr><td class="py-2 px-3 font-bold text-emerald-900">Ration Type A (Mon/Wed/Fri)</td><td class="py-2 px-2 text-center">${schedA}</td><td class="py-2 px-2 text-center font-bold text-emerald-800">${openA}</td><td class="py-2 px-2 text-right">${pwA}</td><td class="py-2 px-2 text-right">${lmA}</td><td class="py-2 px-2 text-right">${pwA + lmA}</td><td class="py-2 px-2 text-right">${chA}</td><td class="py-2 px-2 text-right text-amber-900">${samA}</td><td class="py-2 px-3 text-right font-bold text-emerald-900">${grossA}</td></tr>
-      <tr><td class="py-2 px-3 font-bold text-amber-900">Ration Type B (Tue/Thu/Sat)</td><td class="py-2 px-2 text-center">${schedB}</td><td class="py-2 px-2 text-center font-bold text-amber-800">${openB}</td><td class="py-2 px-2 text-right">${pwB}</td><td class="py-2 px-2 text-right">${lmB}</td><td class="py-2 px-2 text-right">${pwB + lmB}</td><td class="py-2 px-2 text-right">${chB}</td><td class="py-2 px-2 text-right text-amber-900">${samB}</td><td class="py-2 px-3 text-right font-bold text-amber-900">${grossB}</td></tr>
-      <tr class="bg-gray-100 font-bold border-t"><td class="py-2 px-3">Consolidated Month Total</td><td class="py-2 px-2 text-center">${schedA + schedB}</td><td class="py-2 px-2 text-center">${openA + openB}</td><td class="py-2 px-2 text-right">${pwA + pwB}</td><td class="py-2 px-2 text-right">${lmA + lmB}</td><td class="py-2 px-2 text-right">${pwA + lmA + pwB + lmB}</td><td class="py-2 px-2 text-right">${chA + chB}</td><td class="py-2 px-2 text-right text-amber-900">${samA + samB}</td><td class="py-2 px-3 text-right">${grossA + grossB}</td></tr>`;
-
-    renderVegetableModule();
-    renderStockModule();
-    renderFuelModule();
-  }
-
-  function updateAttendanceCell(idx, key, val) {
-    attendanceRoll[idx][key] = Math.max(0, parseInt(val, 10) || 0);
-    renderAttendanceTable();
-  }
-
-  function toggleDayStatus(idx) {
-    const row = attendanceRoll[idx];
-    if (row.status === 'Closed') {
-      row.status = 'Open';
-      row.rationType = (row.day === 'Mon' || row.day === 'Wed' || row.day === 'Fri') ? 'A' : 'B';
-      row.pw = parseInt(document.getElementById('def-pw').value, 10) || 0;
-      row.lm = parseInt(document.getElementById('def-lm').value, 10) || 0;
-      row.child = parseInt(document.getElementById('def-child').value, 10) || 0;
-      row.sam = parseInt(document.getElementById('def-sam').value, 10) || 0;
-    } else {
-      row.status = 'Closed';
-      row.rationType = '-';
-    }
-    renderAttendanceTable();
-  }
-
-  function copyPreviousAttendance(idx) {
-    for (let i = idx - 1; i >= 0; i--) {
-      if (attendanceRoll[i].status === 'Open') {
-        attendanceRoll[idx].pw = attendanceRoll[i].pw;
-        attendanceRoll[idx].lm = attendanceRoll[i].lm;
-        attendanceRoll[idx].child = attendanceRoll[i].child;
-        attendanceRoll[idx].sam = attendanceRoll[i].sam;
-        renderAttendanceTable();
-        return;
-      }
-    }
-  }
-
-  function applyBatchDefaults() {
-    const pw = parseInt(document.getElementById('def-pw').value, 10) || 0;
-    const lm = parseInt(document.getElementById('def-lm').value, 10) || 0;
-    const ch = parseInt(document.getElementById('def-child').value, 10) || 0;
-    const sam = parseInt(document.getElementById('def-sam').value, 10) || 0;
-    attendanceRoll.forEach(row => {
-      if (row.status === 'Open') {
-        row.pw = pw; row.lm = lm; row.child = ch; row.sam = sam;
-      }
-    });
-    renderAttendanceTable();
-  }
-
-  function resetDefaultsToZero() {
-    ['def-pw', 'def-lm', 'def-child', 'def-sam'].forEach(id => document.getElementById(id).value = 0);
-    updateBatchSum();
-    attendanceRoll.forEach(row => {
-      if (row.status === 'Open') {
-        row.pw = 0; row.lm = 0; row.child = 0; row.sam = 0;
-      }
-    });
-    renderAttendanceTable();
-  }
-
-  function updateBatchSum() {
-    const tot = (parseInt(document.getElementById('def-pw').value, 10) || 0) +
-                (parseInt(document.getElementById('def-lm').value, 10) || 0) +
-                (parseInt(document.getElementById('def-child').value, 10) || 0) +
-                (parseInt(document.getElementById('def-sam').value, 10) || 0);
-    document.getElementById('batch-sum-badge').innerText = tot;
-  }
-
-  // TAB 2: RATE CHART METHODS
-  function setRateGroupTab(grp) {
-    activeRateTab = grp;
-    document.getElementById('btn-rate-grp-a').className = grp === 'A' ? 'px-4 py-2 rounded-lg text-xs font-bold bg-emerald-800 text-white shadow-sm transition' : 'px-4 py-2 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition';
-    document.getElementById('btn-rate-grp-b').className = grp === 'B' ? 'px-4 py-2 rounded-lg text-xs font-bold bg-emerald-800 text-white shadow-sm transition' : 'px-4 py-2 rounded-lg text-xs font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition';
-    renderRateChartModule();
-  }
-
-  function renderRateChartModule() {
-    const r = activeRateTab === 'A' ? rates.groupA : rates.groupB;
-    const finTbody = document.getElementById('rates-fin-tbody');
-    const ratTbody = document.getElementById('rates-ration-tbody');
-    
-    const finHeads = [
-      { key: 'egg', name: 'Egg / Boiled' },
-      { key: 'potato', name: 'Potato (Aloo)' },
-      { key: 'veg', name: 'Vegetable' },
-      { key: 'sattu', name: 'Sattu' }
-    ];
-    finTbody.innerHTML = '';
-    finHeads.forEach(h => {
-      finTbody.innerHTML += `
-        <tr class="hover:bg-gray-50">
-          <td class="py-2 px-3 font-semibold text-gray-800">${h.name}</td>
-          <td class="py-2 px-2 text-right"><input type="number" step="0.01" value="${r.financial[h.key].toFixed(2)}" onchange="updateRateItem('financial', '${h.key}', this.value)" class="w-20 text-right border rounded px-1"/></td>
-          <td class="py-2 px-2 text-right"><input type="number" step="0.01" value="${r.financialNormal[h.key].toFixed(2)}" onchange="updateRateItem('financialNormal', '${h.key}', this.value)" class="w-20 text-right border rounded px-1"/></td>
-          <td class="py-2 px-2 text-right text-amber-900"><input type="number" step="0.01" value="${r.financialSam[h.key].toFixed(2)}" onchange="updateRateItem('financialSam', '${h.key}', this.value)" class="w-20 text-right border border-amber-300 rounded px-1 text-amber-900"/></td>
-        </tr>`;
-    });
-
-    const ratHeads = [
-      { key: 'rice', name: 'Fortified Rice' },
-      { key: 'dal', name: 'Dal / Pulses' },
-      { key: 'salt', name: 'Iodized Salt' },
-      { key: 'oil', name: 'Mustard Oil' }
-    ];
-    ratTbody.innerHTML = '';
-    ratHeads.forEach(h => {
-      ratTbody.innerHTML += `
-        <tr class="hover:bg-gray-50">
-          <td class="py-2 px-3 font-semibold text-gray-800">${h.name}</td>
-          <td class="py-2 px-2 text-right"><input type="number" step="0.001" value="${r.ration[h.key].toFixed(3)}" onchange="updateRateItem('ration', '${h.key}', this.value)" class="w-24 text-right border rounded px-1"/></td>
-          <td class="py-2 px-2 text-right"><input type="number" step="0.001" value="${r.rationNormal[h.key].toFixed(3)}" onchange="updateRateItem('rationNormal', '${h.key}', this.value)" class="w-24 text-right border rounded px-1"/></td>
-          <td class="py-2 px-2 text-right text-emerald-900"><input type="number" step="0.001" value="${r.rationSam[h.key].toFixed(3)}" onchange="updateRateItem('rationSam', '${h.key}', this.value)" class="w-24 text-right border border-emerald-300 rounded px-1 text-emerald-900"/></td>
-        </tr>`;
-    });
-  }
-
-  function updateRateItem(sec, key, val) {
-    const target = activeRateTab === 'A' ? rates.groupA : rates.groupB;
-    target[sec][key] = parseFloat(val) || 0;
-    localStorage.setItem('awc_rates_store', JSON.stringify(rates));
-    renderVegetableModule();
-    renderStockModule();
-  }
-
-  function resetDefaultRates() {
-    rates = JSON.parse(JSON.stringify(defaultRates));
-    localStorage.setItem('awc_rates_store', JSON.stringify(rates));
-    renderRateChartModule();
-    renderVegetableModule();
-    renderStockModule();
-  }
-
-  // TAB 3: VEGETABLE BILL (Simple Table + Sattu toggle)
-  function renderVegetableModule() {
-    const incSattu = document.getElementById('chk-include-sattu') && document.getElementById('chk-include-sattu').checked;
-    const thead = document.getElementById('veg-table-thead');
-    const tbody = document.getElementById('veg-table-tbody');
-    const tfoot = document.getElementById('veg-table-tfoot');
-
-    if (incSattu) {
-      thead.innerHTML = `<tr><th class="py-2.5 px-3">Date</th><th class="py-2.5 px-2 text-right">Mother</th><th class="py-2.5 px-2 text-right">Children</th><th class="py-2.5 px-2 text-right">SAM</th><th class="py-2.5 px-2 text-right font-bold">Total</th><th class="py-2.5 px-2 text-right">Egg (₹)</th><th class="py-2.5 px-2 text-right">Potato (₹)</th><th class="py-2.5 px-2 text-right">Vegetable (₹)</th><th class="py-2.5 px-2 text-right">Sattu (₹)</th><th class="py-2.5 px-3 text-right font-bold text-emerald-900 bg-emerald-50">Total (₹)</th></tr>`;
-    } else {
-      thead.innerHTML = `<tr><th class="py-2.5 px-3">Date</th><th class="py-2.5 px-2 text-right">Mother</th><th class="py-2.5 px-2 text-right">Children</th><th class="py-2.5 px-2 text-right">SAM</th><th class="py-2.5 px-2 text-right font-bold">Total</th><th class="py-2.5 px-2 text-right">Egg (₹)</th><th class="py-2.5 px-2 text-right">Potato (₹)</th><th class="py-2.5 px-2 text-right">Vegetable (₹)</th><th class="py-2.5 px-3 text-right font-bold text-emerald-900 bg-emerald-50">Total (₹)</th><th class="py-2.5 px-2 text-right text-gray-500">Sattu (₹)</th></tr>`;
-    }
-
-    tbody.innerHTML = '';
-    let sumMoms = 0, sumKids = 0, sumSams = 0, sumTotalHeads = 0;
-    let sumEgg = 0, sumPot = 0, sumVeg = 0, sumSattu = 0, sumGross = 0;
-    let grpA = { days: 0, moms: 0, kids: 0, sam: 0, egg: 0, pot: 0, veg: 0, sattu: 0, cost: 0 };
-    let grpB = { days: 0, moms: 0, kids: 0, sam: 0, egg: 0, pot: 0, veg: 0, sattu: 0, cost: 0 };
-
-    attendanceRoll.forEach(row => {
-      const isClosed = row.status === 'Closed';
-      const moms = isClosed ? 0 : (row.pw + row.lm);
-      const kids = isClosed ? 0 : row.child;
-      const sams = isClosed ? 0 : row.sam;
-      const heads = isClosed ? 0 : (moms + kids + sams);
-
-      let egg = 0, pot = 0, veg = 0, sattu = 0, dayTotal = 0;
-      if (!isClosed) {
-        sumMoms += moms; sumKids += kids; sumSams += sams; sumTotalHeads += heads;
-        const curRates = row.rationType === 'A' ? rates.groupA : rates.groupB;
-        egg = (moms * curRates.financial.egg) + (kids * curRates.financialNormal.egg) + (sams * curRates.financialSam.egg);
-        pot = (moms * curRates.financial.potato) + (kids * curRates.financialNormal.potato) + (sams * curRates.financialSam.potato);
-        veg = (moms * curRates.financial.veg) + (kids * curRates.financialNormal.veg) + (sams * curRates.financialSam.veg);
-        sattu = (moms * curRates.financial.sattu) + (kids * curRates.financialNormal.sattu) + (sams * curRates.financialSam.sattu);
-
-        const targetGrp = row.rationType === 'A' ? grpA : grpB;
-        targetGrp.days++; targetGrp.moms += moms; targetGrp.kids += kids; targetGrp.sam += sams;
-        targetGrp.egg += egg; targetGrp.pot += pot; targetGrp.veg += veg; targetGrp.sattu += sattu;
-
-        dayTotal = egg + pot + veg + (incSattu ? sattu : 0);
-        targetGrp.cost += dayTotal;
-      }
-
-      sumEgg += egg; sumPot += pot; sumVeg += veg; sumSattu += sattu; sumGross += dayTotal;
-
-      if (incSattu) {
-        tbody.innerHTML += `
-          <tr class="${isClosed ? 'bg-red-50/40 text-red-700' : 'hover:bg-gray-50'}">
-            <td class="py-1.5 px-3 font-semibold">${row.dateStr}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : moms}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : kids}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : sams}</td><td class="py-1.5 px-2 text-right font-bold">${isClosed ? '-' : heads}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : egg.toFixed(2)}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : pot.toFixed(2)}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : veg.toFixed(2)}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : sattu.toFixed(2)}</td><td class="py-1.5 px-3 text-right font-bold text-emerald-900 bg-emerald-50/30">${isClosed ? '-' : dayTotal.toFixed(2)}</td>
-          </tr>`;
-      } else {
-        tbody.innerHTML += `
-          <tr class="${isClosed ? 'bg-red-50/40 text-red-700' : 'hover:bg-gray-50'}">
-            <td class="py-1.5 px-3 font-semibold">${row.dateStr}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : moms}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : kids}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : sams}</td><td class="py-1.5 px-2 text-right font-bold">${isClosed ? '-' : heads}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : egg.toFixed(2)}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : pot.toFixed(2)}</td><td class="py-1.5 px-2 text-right">${isClosed ? '-' : veg.toFixed(2)}</td><td class="py-1.5 px-3 text-right font-bold text-emerald-900 bg-emerald-50/30">${isClosed ? '-' : dayTotal.toFixed(2)}</td><td class="py-1.5 px-2 text-right text-gray-500">${isClosed ? '-' : sattu.toFixed(2)}</td>
-          </tr>`;
-      }
-    });
-
-    if (incSattu) {
-      tfoot.innerHTML = `<tr><td class="py-2.5 px-3">MONTH TOTAL</td><td class="py-2.5 px-2 text-right">${sumMoms}</td><td class="py-2.5 px-2 text-right">${sumKids}</td><td class="py-2.5 px-2 text-right">${sumSams}</td><td class="py-2.5 px-2 text-right">${sumTotalHeads}</td><td class="py-2.5 px-2 text-right">${sumEgg.toFixed(2)}</td><td class="py-2.5 px-2 text-right">${sumPot.toFixed(2)}</td><td class="py-2.5 px-2 text-right">${sumVeg.toFixed(2)}</td><td class="py-2.5 px-2 text-right">${sumSattu.toFixed(2)}</td><td class="py-2.5 px-3 text-right text-emerald-900 bg-emerald-100/50">${sumGross.toFixed(2)}</td></tr>`;
-    } else {
-      tfoot.innerHTML = `<tr><td class="py-2.5 px-3">MONTH TOTAL</td><td class="py-2.5 px-2 text-right">${sumMoms}</td><td class="py-2.5 px-2 text-right">${sumKids}</td><td class="py-2.5 px-2 text-right">${sumSams}</td><td class="py-2.5 px-2 text-right">${sumTotalHeads}</td><td class="py-2.5 px-2 text-right">${sumEgg.toFixed(2)}</td><td class="py-2.5 px-2 text-right">${sumPot.toFixed(2)}</td><td class="py-2.5 px-2 text-right">${sumVeg.toFixed(2)}</td><td class="py-2.5 px-3 text-right text-emerald-900 bg-emerald-100/50">${sumGross.toFixed(2)}</td><td class="py-2.5 px-2 text-right text-gray-500">${sumSattu.toFixed(2)}</td></tr>`;
-    }
-
-    document.getElementById('veg-summary-tbody').innerHTML = `
-      <tr><td class="py-2 px-3 font-bold text-emerald-900">Group A (Mon/Wed/Fri)</td><td class="py-2 px-2 text-center">${grpA.days}</td><td class="py-2 px-2 text-right">${grpA.moms}</td><td class="py-2 px-2 text-right">${grpA.kids}</td><td class="py-2 px-2 text-right text-amber-900">${grpA.sam}</td><td class="py-2 px-2 text-right font-bold">${grpA.moms + grpA.kids + grpA.sam}</td><td class="py-2 px-2 text-right">${grpA.egg.toFixed(2)}</td><td class="py-2 px-2 text-right">${grpA.pot.toFixed(2)}</td><td class="py-2 px-2 text-right">${grpA.veg.toFixed(2)}</td><td class="py-2 px-2 text-right">${grpA.sattu.toFixed(2)}</td><td class="py-2 px-3 text-right font-bold text-emerald-900">₹ ${grpA.cost.toFixed(2)}</td></tr>
-      <tr><td class="py-2 px-3 font-bold text-amber-900">Group B (Tue/Thu/Sat)</td><td class="py-2 px-2 text-center">${grpB.days}</td><td class="py-2 px-2 text-right">${grpB.moms}</td><td class="py-2 px-2 text-right">${grpB.kids}</td><td class="py-2 px-2 text-right text-amber-900">${grpB.sam}</td><td class="py-2 px-2 text-right font-bold">${grpB.moms + grpB.kids + grpB.sam}</td><td class="py-2 px-2 text-right">${grpB.egg.toFixed(2)}</td><td class="py-2 px-2 text-right">${grpB.pot.toFixed(2)}</td><td class="py-2 px-2 text-right">${grpB.veg.toFixed(2)}</td><td class="py-2 px-2 text-right">${grpB.sattu.toFixed(2)}</td><td class="py-2 px-3 text-right font-bold text-amber-900">₹ ${grpB.cost.toFixed(2)}</td></tr>
-      <tr class="bg-gray-100 font-bold border-t"><td class="py-2 px-3">Consolidated Month Total</td><td class="py-2 px-2 text-center">${grpA.days + grpB.days}</td><td class="py-2 px-2 text-right">${grpA.moms + grpB.moms}</td><td class="py-2 px-2 text-right">${grpA.kids + grpB.kids}</td><td class="py-2 px-2 text-right text-amber-900">${grpA.sam + grpB.sam}</td><td class="py-2 px-2 text-right">${sumTotalHeads}</td><td class="py-2 px-2 text-right">${(grpA.egg + grpB.egg).toFixed(2)}</td><td class="py-2 px-2 text-right">${(grpA.pot + grpB.pot).toFixed(2)}</td><td class="py-2 px-2 text-right">${(grpA.veg + grpB.veg).toFixed(2)}</td><td class="py-2 px-2 text-right">${(grpA.sattu + grpB.sattu).toFixed(2)}</td><td class="py-2 px-3 text-right text-emerald-950">₹ ${sumGross.toFixed(2)}</td></tr>`;
-  }
-
-  // TAB 4: STOCK REGISTER (Form V with Receivable, Consumption, Balance)
-  function renderStockModule() {
-    renderStockTxTable();
-    const tbody = document.getElementById('stock-ledger-tbody');
-    tbody.innerHTML = '';
-
-    let runningBal = {
-      rice: parseFloat(document.getElementById('op-rice').value) || 0,
-      dal: parseFloat(document.getElementById('op-dal').value) || 0,
-      salt: parseFloat(document.getElementById('op-salt').value) || 0,
-      oil: parseFloat(document.getElementById('op-oil').value) || 0
     };
 
-    let sumCons = { rice: 0, dal: 0, salt: 0, oil: 0 };
-    let sumRec = { rice: 0, dal: 0, salt: 0, oil: 0 };
-    let sumMoms = 0, sumKids = 0, sumSams = 0;
-    let grpA = { days: 0, moms: 0, kids: 0, rice: 0, dal: 0, salt: 0, oil: 0 };
-    let grpB = { days: 0, moms: 0, kids: 0, rice: 0, dal: 0, salt: 0, oil: 0 };
+    let rates = JSON.parse(JSON.stringify(defaultRates));
+    let attendanceRoll = [];
+    let transactions = []; // Clean state
 
-    attendanceRoll.forEach(row => {
-      const isClosed = row.status === 'Closed';
-      const moms = isClosed ? 0 : (row.pw + row.lm);
-      const kids = isClosed ? 0 : row.child;
-      const sams = isClosed ? 0 : row.sam;
-      const curRates = row.rationType === 'A' ? rates.groupA : rates.groupB;
+    // 5 Specified Transaction Types metadata & mapping
+    const TX_TYPE_CONFIG = {
+      'receivables': { label: 'Receivables (+)', sign: 1, class: 'bg-emerald-100 text-emerald-900 border border-emerald-200' },
+      'borrowing': { label: 'Borrowing (+)', sign: 1, class: 'bg-teal-100 text-teal-900 border border-teal-200' },
+      'return_of_lending': { label: 'Return of Lending (+)', sign: 1, class: 'bg-cyan-100 text-cyan-900 border border-cyan-200' },
+      'lending': { label: 'Lending (-)', sign: -1, class: 'bg-rose-100 text-rose-900 border border-rose-200' },
+      'return_of_borrowing': { label: 'Return of Borrowing (-)', sign: -1, class: 'bg-amber-100 text-amber-900 border border-amber-200' }
+    };
 
-      if (!isClosed) {
-        sumMoms += moms; sumKids += kids; sumSams += sams;
-        const target = row.rationType === 'A' ? grpA : grpB;
-        target.days++; target.moms += moms; target.kids += kids;
+    /**
+     * CALENDAR GENERATOR
+     */
+    function initAttendanceRoll() {
+      attendanceRoll = [];
+      const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      let dayOffset = 4; // October 2026 starts on Thursday
+      if (activeMonthKey === '6-2026') dayOffset = 1;
+      if (activeMonthKey === '7-2026') dayOffset = 3;
+      if (activeMonthKey === '8-2026') dayOffset = 6;
+      if (activeMonthKey === '9-2026') dayOffset = 2;
+      if (activeMonthKey === '11-2026') dayOffset = 0;
+      if (activeMonthKey === '12-2026') dayOffset = 2;
+
+      for (let i = 1; i <= activeMonthDays; i++) {
+        const wIdx = (dayOffset + (i - 1)) % 7;
+        const wName = weekdays[wIdx];
+        const isSun = (wName === 'Sun');
+        const dayStr = i < 10 ? '0' + i : '' + i;
+        const iso = `2026-${activeMonthKey.split('-')[0].padStart(2, '0')}-${dayStr}`;
+
+        let grp = '-';
+        if (!isSun) {
+          grp = (wName === 'Mon' || wName === 'Wed' || wName === 'Fri') ? 'A' : 'B';
+        }
+
+        attendanceRoll.push({
+          dateStr: `${dayStr} ${activeMonthName.split(' ')[0]}`,
+          dayNumber: i,
+          isoDate: iso,
+          day: wName,
+          status: isSun ? 'Closed' : 'Open',
+          group: grp,
+          pw: 0,
+          lm: 0,
+          child: 0,
+          sam: 0
+        });
       }
+    }
 
-      // Check daily movement
-      const dNumStr = row.dayNumber < 10 ? '0' + row.dayNumber : '' + row.dayNumber;
-      const isoD = `2026-${activeMonthKey.split('-')[0].padStart(2, '0')}-${dNumStr}`;
-      const dayTxs = inventoryMovements.filter(t => t.date === isoD);
-      let dayRec = { rice: 0, dal: 0, salt: 0, oil: 0 };
-      dayTxs.forEach(t => {
-        const mult = (t.type === 'lending' || t.type === 'return_borrowing') ? -1 : 1;
-        dayRec.rice += (parseFloat(t.rice) || 0) * mult;
-        dayRec.dal += (parseFloat(t.dal) || 0) * mult;
-        dayRec.salt += (parseFloat(t.salt) || 0) * mult;
-        dayRec.oil += (parseFloat(t.oil) || 0) * mult;
-      });
+    /**
+     * RENDER TAB 1 ATTENDANCE TABLE
+     */
+    function renderAttendanceTable() {
+      const tbody = document.getElementById('attendance-tbody');
+      tbody.innerHTML = '';
+      let sumPw = 0, sumLm = 0, sumChild = 0, sumSam = 0, sumGross = 0;
+      let openCount = 0;
 
-      let html = '';
-      ['rice', 'dal', 'salt', 'oil'].forEach(c => {
-        runningBal[c] += dayRec[c];
-        sumRec[c] += dayRec[c];
+      let grpA = { days: 0, pw: 0, lm: 0, child: 0, sam: 0, total: 0 };
+      let grpB = { days: 0, pw: 0, lm: 0, child: 0, sam: 0, total: 0 };
 
-        const thCons = isClosed ? 0 : (moms * curRates.ration[c]) + (kids * curRates.rationNormal[c]) + (sams * curRates.rationSam[c]);
+      attendanceRoll.forEach((row, idx) => {
+        const isClosed = row.status === 'Closed';
+        const dayTotal = isClosed ? 0 : (row.pw + row.lm + row.child + row.sam);
+
         if (!isClosed) {
-          if (row.rationType === 'A') grpA[c] += thCons; else grpB[c] += thCons;
+          openCount++;
+          sumPw += row.pw; sumLm += row.lm; sumChild += row.child; sumSam += row.sam;
+          sumGross += dayTotal;
+
+          const target = (row.group === 'A') ? grpA : grpB;
+          target.days++;
+          target.pw += row.pw;
+          target.lm += row.lm;
+          target.child += row.child;
+          target.sam += row.sam;
+          target.total += dayTotal;
         }
 
-        let actualCons = 0;
-        if (runningBal[c] > 0) {
-          if (runningBal[c] < thCons) {
-            actualCons = runningBal[c];
-            runningBal[c] = 0;
-          } else {
-            actualCons = thCons;
-            runningBal[c] -= thCons;
-          }
-        }
-        sumCons[c] += actualCons;
-
-        const recLabel = dayRec[c] !== 0 ? (dayRec[c] > 0 ? `+${dayRec[c].toFixed(3)}` : `${dayRec[c].toFixed(3)}`) : '-';
-        html += `<td class="py-1 px-1 text-right text-gray-500">${recLabel}</td><td class="py-1 px-1 text-right">${actualCons.toFixed(3)}</td><td class="py-1 px-1 text-right font-bold border-r">${runningBal[c].toFixed(3)}</td>`;
+        const tr = document.createElement('tr');
+        tr.className = isClosed ? 'bg-red-50/50 text-red-700' : 'hover:bg-slate-50';
+        tr.innerHTML = `
+          <td class="py-2 px-3 font-semibold">${row.dateStr}</td>
+          <td class="py-2 px-2 font-bold">${row.day}</td>
+          <td class="py-2 px-2">
+            <button onclick="toggleDayStatus(${idx})" class="px-2 py-0.5 rounded text-[10px] font-bold ${isClosed ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'}">
+              ${row.status}
+            </button>
+          </td>
+          <td class="py-2 px-2 font-bold text-center">
+            ${isClosed ? '-' : `<span class="cursor-pointer underline decoration-dotted" onclick="promptChangeGroup(${idx})">${row.group}</span>`}
+          </td>
+          <td class="py-2 px-2 text-right">${isClosed ? '-' : `<input type="number" min="0" value="${row.pw}" onchange="updateRowField(${idx}, 'pw', this.value)" class="w-12 text-right border border-slate-300 rounded px-1"/>`}</td>
+          <td class="py-2 px-2 text-right">${isClosed ? '-' : `<input type="number" min="0" value="${row.lm}" onchange="updateRowField(${idx}, 'lm', this.value)" class="w-12 text-right border border-slate-300 rounded px-1"/>`}</td>
+          <td class="py-2 px-2 text-right">${isClosed ? '-' : `<input type="number" min="0" value="${row.child}" onchange="updateRowField(${idx}, 'child', this.value)" class="w-12 text-right border border-slate-300 rounded px-1"/>`}</td>
+          <td class="py-2 px-2 text-right bg-amber-50/30">${isClosed ? '-' : `<input type="number" min="0" value="${row.sam}" onchange="updateRowField(${idx}, 'sam', this.value)" class="w-10 text-right border border-amber-300 rounded px-1 text-amber-900"/>`}</td>
+          <td class="py-2 px-3 text-right font-bold text-emerald-950 bg-emerald-50/30">${isClosed ? '-' : dayTotal}</td>
+          <td class="py-2 px-2 text-center">
+            ${isClosed ? '-' : `<button onclick="copyPreviousOpenDay(${idx})" class="text-slate-400 hover:text-emerald-700" title="Copy from Previous Open Day"><span class="material-symbols-outlined text-[15px]">content_copy</span></button>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
       });
 
-      tbody.innerHTML += `
-        <tr class="${isClosed ? 'bg-red-50/30 text-red-700' : 'hover:bg-gray-50'}">
-          <td class="py-1 px-2 border-r font-medium">${row.dateStr}</td><td class="py-1 px-1 text-right">${moms}</td><td class="py-1 px-1 text-right">${kids}</td><td class="py-1 px-1 text-right border-r text-amber-900">${sams}</td>${html}
-        </tr>`;
-    });
+      document.getElementById('tot-pw').innerText = sumPw;
+      document.getElementById('tot-lm').innerText = sumLm;
+      document.getElementById('tot-child').innerText = sumChild;
+      document.getElementById('tot-sam').innerText = sumSam;
+      document.getElementById('tot-gross').innerText = sumGross;
+      document.getElementById('open-days-counter').innerText = `Open Days: ${openCount} / ${activeMonthDays}`;
 
-    document.getElementById('stock-ledger-tfoot').innerHTML = `
-      <tr>
-        <td class="py-2 px-2 border-r">TOTAL</td><td class="py-2 px-1 text-right">${sumMoms}</td><td class="py-2 px-1 text-right">${sumKids}</td><td class="py-2 px-1 text-right border-r">${sumSams}</td>
-        <td class="py-2 px-1 text-right">${sumRec.rice !== 0 ? (sumRec.rice > 0 ? '+' : '') + sumRec.rice.toFixed(3) : '-'}</td><td class="py-2 px-1 text-right">${sumCons.rice.toFixed(3)}</td><td class="py-2 px-1 text-right border-r font-bold">${runningBal.rice.toFixed(3)}</td>
-        <td class="py-2 px-1 text-right">${sumRec.dal !== 0 ? (sumRec.dal > 0 ? '+' : '') + sumRec.dal.toFixed(3) : '-'}</td><td class="py-2 px-1 text-right">${sumCons.dal.toFixed(3)}</td><td class="py-2 px-1 text-right border-r font-bold">${runningBal.dal.toFixed(3)}</td>
-        <td class="py-2 px-1 text-right">${sumRec.salt !== 0 ? (sumRec.salt > 0 ? '+' : '') + sumRec.salt.toFixed(3) : '-'}</td><td class="py-2 px-1 text-right">${sumCons.salt.toFixed(3)}</td><td class="py-2 px-1 text-right border-r font-bold">${runningBal.salt.toFixed(3)}</td>
-        <td class="py-2 px-1 text-right">${sumRec.oil !== 0 ? (sumRec.oil > 0 ? '+' : '') + sumRec.oil.toFixed(3) : '-'}</td><td class="py-2 px-1 text-right">${sumCons.oil.toFixed(3)}</td><td class="py-2 px-1 text-right font-bold">${runningBal.oil.toFixed(3)}</td>
-      </tr>`;
+      // Render summary breakdown table
+      const sumTbody = document.getElementById('group-summary-tbody');
+      sumTbody.innerHTML = `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-bold text-emerald-900">Group A (Mon / Wed / Fri)</td>
+          <td class="py-2 px-2 text-center">13</td>
+          <td class="py-2 px-2 text-center font-bold text-emerald-800">${grpA.days}</td>
+          <td class="py-2 px-2 text-right">${grpA.pw + grpA.lm}</td>
+          <td class="py-2 px-2 text-right">${grpA.child}</td>
+          <td class="py-2 px-2 text-right text-amber-900">${grpA.sam}</td>
+          <td class="py-2 px-3 text-right font-bold text-slate-900">${grpA.total}</td>
+        </tr>
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-bold text-amber-900">Group B (Tue / Thu / Sat)</td>
+          <td class="py-2 px-2 text-center">14</td>
+          <td class="py-2 px-2 text-center font-bold text-amber-800">${grpB.days}</td>
+          <td class="py-2 px-2 text-right">${grpB.pw + grpB.lm}</td>
+          <td class="py-2 px-2 text-right">${grpB.child}</td>
+          <td class="py-2 px-2 text-right text-amber-900">${grpB.sam}</td>
+          <td class="py-2 px-3 text-right font-bold text-slate-900">${grpB.total}</td>
+        </tr>
+        <tr class="bg-slate-100 font-bold border-t">
+          <td class="py-2 px-3">Monthly Consolidated Total</td>
+          <td class="py-2 px-2 text-center">27</td>
+          <td class="py-2 px-2 text-center">${grpA.days + grpB.days}</td>
+          <td class="py-2 px-2 text-right">${(grpA.pw + grpA.lm) + (grpB.pw + grpB.lm)}</td>
+          <td class="py-2 px-2 text-right">${grpA.child + grpB.child}</td>
+          <td class="py-2 px-2 text-right text-amber-900">${grpA.sam + grpB.sam}</td>
+          <td class="py-2 px-3 text-right text-emerald-950">${grpA.total + grpB.total}</td>
+        </tr>
+      `;
+    }
 
-    document.getElementById('stock-ab-summary-tbody').innerHTML = `
-      <tr><td class="py-2 px-3 font-bold text-emerald-900">Ration Type A (Mon/Wed/Fri)</td><td class="py-2 px-2 text-center">${grpA.days}</td><td class="py-2 px-2 text-right">${grpA.moms}</td><td class="py-2 px-2 text-right">${grpA.kids}</td><td class="py-2 px-2 text-right">${grpA.rice.toFixed(3)}</td><td class="py-2 px-2 text-right">${grpA.dal.toFixed(3)}</td><td class="py-2 px-2 text-right">${grpA.salt.toFixed(3)}</td><td class="py-2 px-2 text-right font-bold text-emerald-900">${grpA.oil.toFixed(3)}</td></tr>
-      <tr><td class="py-2 px-3 font-bold text-amber-900">Ration Type B (Tue/Thu/Sat)</td><td class="py-2 px-2 text-center">${grpB.days}</td><td class="py-2 px-2 text-right">${grpB.moms}</td><td class="py-2 px-2 text-right">${grpB.kids}</td><td class="py-2 px-2 text-right">${grpB.rice.toFixed(3)}</td><td class="py-2 px-2 text-right">${grpB.dal.toFixed(3)}</td><td class="py-2 px-2 text-right">${grpB.salt.toFixed(3)}</td><td class="py-2 px-2 text-right font-bold text-amber-900">${grpB.oil.toFixed(3)}</td></tr>
-      <tr class="bg-gray-100 font-bold border-t"><td class="py-2 px-3">Consolidated Month Consumption</td><td class="py-2 px-2 text-center">${grpA.days + grpB.days}</td><td class="py-2 px-2 text-right">${grpA.moms + grpB.moms}</td><td class="py-2 px-2 text-right">${grpA.kids + grpB.kids}</td><td class="py-2 px-2 text-right">${(grpA.rice + grpB.rice).toFixed(3)}</td><td class="py-2 px-2 text-right">${(grpA.dal + grpB.dal).toFixed(3)}</td><td class="py-2 px-2 text-right">${(grpA.salt + grpB.salt).toFixed(3)}</td><td class="py-2 px-2 text-right text-emerald-950">${(grpA.oil + grpB.oil).toFixed(3)}</td></tr>`;
-  }
+    function updateRowField(idx, key, val) {
+      attendanceRoll[idx][key] = Math.max(0, parseInt(val, 10) || 0);
+      renderAttendanceTable();
+    }
 
-  function renderStockTxTable() {
-    const tbody = document.getElementById('stock-tx-tbody');
-    tbody.innerHTML = '';
-    const typeNames = {
-      'receivable': 'Receivable (+)',
-      'borrowing': 'Borrowing (+)',
-      'return_lending': 'Return of Lending (+)',
-      'lending': 'Lending (-)',
-      'return_borrowing': 'Return of Borrowing (-)'
-    };
-    inventoryMovements.forEach(t => {
-      const isMinus = (t.type === 'lending' || t.type === 'return_borrowing');
-      tbody.innerHTML += `
-        <tr class="hover:bg-gray-50">
-          <td class="py-2 px-2 font-medium">${t.date}</td>
-          <td class="py-2 px-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isMinus ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-800'}">${typeNames[t.type] || t.type}</span></td>
-          <td class="py-2 px-2">${t.remarks}</td>
-          <td class="py-2 px-2 text-right font-bold">${parseFloat(t.rice).toFixed(3)}</td>
-          <td class="py-2 px-2 text-right font-bold">${parseFloat(t.dal).toFixed(3)}</td>
-          <td class="py-2 px-2 text-right font-bold">${parseFloat(t.salt).toFixed(3)}</td>
-          <td class="py-2 px-2 text-right font-bold">${parseFloat(t.oil).toFixed(3)}</td>
-          <td class="py-2 px-2 text-center">
-            <button onclick="editTxEntry('${t.id}')" class="text-emerald-700 hover:text-emerald-900 mr-2"><span class="material-symbols-outlined text-[15px]">edit</span></button>
-            <button onclick="deleteTxEntry('${t.id}')" class="text-red-500 hover:text-red-700"><span class="material-symbols-outlined text-[15px]">delete</span></button>
-          </td>
-        </tr>`;
-    });
-  }
+    function toggleDayStatus(idx) {
+      const row = attendanceRoll[idx];
+      if (row.status === 'Closed') {
+        pendingModalIndex = idx;
+        document.getElementById('modal-date-label').innerText = row.dateStr;
+        document.getElementById('group-modal').classList.remove('hidden');
+      } else {
+        row.status = 'Closed';
+        row.group = '-';
+        renderAttendanceTable();
+      }
+    }
 
-  function openTxModal(editId = null) {
-    document.getElementById('tx-edit-id').value = editId || '';
-    const dInput = document.getElementById('tx-date');
-    const mNum = activeMonthKey.split('-')[0].padStart(2, '0');
-    dInput.min = `2026-${mNum}-01`;
-    dInput.max = `2026-${mNum}-${activeMonthDays.toString().padStart(2, '0')}`;
+    function promptChangeGroup(idx) {
+      pendingModalIndex = idx;
+      document.getElementById('modal-date-label').innerText = attendanceRoll[idx].dateStr;
+      document.getElementById('group-modal').classList.remove('hidden');
+    }
 
-    if (editId) {
-      const item = inventoryMovements.find(x => x.id === editId);
-      document.getElementById('modal-title').innerText = 'Edit Stock Transaction';
-      dInput.value = item.date;
-      document.getElementById('tx-type').value = item.type;
-      document.getElementById('tx-remarks').value = item.remarks;
-      document.getElementById('tx-rice').value = item.rice;
-      document.getElementById('tx-dal').value = item.dal;
-      document.getElementById('tx-salt').value = item.salt;
-      document.getElementById('tx-oil').value = item.oil;
-    } else {
-      document.getElementById('modal-title').innerText = 'Add Stock Transaction';
-      dInput.value = `2026-${mNum}-05`;
-      document.getElementById('tx-type').value = 'receivable';
+    function confirmGroupSelect(grp) {
+      if (pendingModalIndex !== null) {
+        const row = attendanceRoll[pendingModalIndex];
+        row.status = 'Open';
+        row.group = grp;
+        row.pw = parseInt(document.getElementById('batch-pw').value, 10) || 0;
+        row.lm = parseInt(document.getElementById('batch-lm').value, 10) || 0;
+        row.child = parseInt(document.getElementById('batch-child').value, 10) || 0;
+        row.sam = parseInt(document.getElementById('batch-sam').value, 10) || 0;
+      }
+      closeGroupModal();
+      renderAttendanceTable();
+    }
+
+    function closeGroupModal() {
+      document.getElementById('group-modal').classList.add('hidden');
+      pendingModalIndex = null;
+    }
+
+    function copyPreviousOpenDay(idx) {
+      for (let i = idx - 1; i >= 0; i--) {
+        if (attendanceRoll[i].status === 'Open') {
+          const prev = attendanceRoll[i];
+          attendanceRoll[idx].pw = prev.pw;
+          attendanceRoll[idx].lm = prev.lm;
+          attendanceRoll[idx].child = prev.child;
+          attendanceRoll[idx].sam = prev.sam;
+          renderAttendanceTable();
+          break;
+        }
+      }
+    }
+
+    function calcBatchIndicator() {
+      const tot = (parseInt(document.getElementById('batch-pw').value, 10) || 0) +
+                  (parseInt(document.getElementById('batch-lm').value, 10) || 0) +
+                  (parseInt(document.getElementById('batch-child').value, 10) || 0) +
+                  (parseInt(document.getElementById('batch-sam').value, 10) || 0);
+      document.getElementById('batch-total-indicator').innerText = tot;
+    }
+
+    function applyBatchToOpenDays() {
+      const pw = parseInt(document.getElementById('batch-pw').value, 10) || 0;
+      const lm = parseInt(document.getElementById('batch-lm').value, 10) || 0;
+      const child = parseInt(document.getElementById('batch-child').value, 10) || 0;
+      const sam = parseInt(document.getElementById('batch-sam').value, 10) || 0;
+
+      attendanceRoll.forEach(row => {
+        if (row.status === 'Open') {
+          row.pw = pw; row.lm = lm; row.child = child; row.sam = sam;
+        }
+      });
+      renderAttendanceTable();
+    }
+
+    function resetAllDefaultsToZero() {
+      ['batch-pw', 'batch-lm', 'batch-child', 'batch-sam'].forEach(id => document.getElementById(id).value = 0);
+      calcBatchIndicator();
+      attendanceRoll.forEach(row => {
+        if (row.status === 'Open') {
+          row.pw = 0; row.lm = 0; row.child = 0; row.sam = 0;
+        }
+      });
+      renderAttendanceTable();
+    }
+
+    /**
+     * RENDER TAB 2 RATE MASTER
+     */
+    function setRateGroup(grp) {
+      currentRateGroup = grp;
+      document.getElementById('rate-btn-grpA').className = (grp === 'A') ? 'px-4 py-2 rounded-lg text-xs font-bold bg-emerald-800 text-white shadow-sm transition' : 'px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      document.getElementById('rate-btn-grpB').className = (grp === 'B') ? 'px-4 py-2 rounded-lg text-xs font-bold bg-emerald-800 text-white shadow-sm transition' : 'px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      document.getElementById('copy-rate-label').innerText = (grp === 'A') ? 'Copy Group A → B' : 'Copy Group B → A';
+      renderRateTables();
+    }
+
+    function renderRateTables() {
+      const finTbody = document.getElementById('rates-fin-tbody');
+      const ratTbody = document.getElementById('rates-rat-tbody');
+      const r = (currentRateGroup === 'A') ? rates.groupA : rates.groupB;
+
+      const heads = [
+        { k: 'egg', name: 'Egg / Boiled' },
+        { k: 'potato', name: 'Potato (Aloo)' },
+        { k: 'veg', name: 'Green Vegetables' },
+        { k: 'sattu', name: 'Sattu / Supplementary' }
+      ];
+
+      finTbody.innerHTML = '';
+      heads.forEach(h => {
+        finTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2 px-3 font-semibold text-slate-800">${h.name}</td>
+            <td class="py-2 px-3 text-right"><input type="number" step="0.01" value="${r.financial[h.k].toFixed(2)}" onchange="updateRateItem('financial', '${h.k}', this.value)" class="w-20 text-right border border-slate-300 rounded px-1.5 py-0.5"/></td>
+            <td class="py-2 px-3 text-right"><input type="number" step="0.01" value="${r.financialNormal[h.k].toFixed(2)}" onchange="updateRateItem('financialNormal', '${h.k}', this.value)" class="w-20 text-right border border-slate-300 rounded px-1.5 py-0.5"/></td>
+            <td class="py-2 px-3 text-right"><input type="number" step="0.01" value="${r.financialSam[h.k].toFixed(2)}" onchange="updateRateItem('financialSam', '${h.k}', this.value)" class="w-20 text-right border border-amber-300 text-amber-900 rounded px-1.5 py-0.5"/></td>
+          </tr>
+        `;
+      });
+
+      const commodities = [
+        { k: 'rice', name: 'Fortified Rice' },
+        { k: 'dal',  name: 'Dal / Pulses' },
+        { k: 'salt', name: 'Iodized Salt' },
+        { k: 'oil',  name: 'Mustard Oil' }
+      ];
+
+      ratTbody.innerHTML = '';
+      commodities.forEach(c => {
+        ratTbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="py-2 px-3 font-semibold text-slate-800">${c.name}</td>
+            <td class="py-2 px-3 text-right"><input type="number" step="0.001" value="${r.ration[c.k].toFixed(3)}" onchange="updateRateItem('ration', '${c.k}', this.value)" class="w-24 text-right border border-slate-300 rounded px-1.5 py-0.5"/></td>
+            <td class="py-2 px-3 text-right"><input type="number" step="0.001" value="${r.rationNormal[c.k].toFixed(3)}" onchange="updateRateItem('rationNormal', '${c.k}', this.value)" class="w-24 text-right border border-slate-300 rounded px-1.5 py-0.5"/></td>
+            <td class="py-2 px-3 text-right"><input type="number" step="0.001" value="${r.rationSam[c.k].toFixed(3)}" onchange="updateRateItem('rationSam', '${c.k}', this.value)" class="w-24 text-right border border-emerald-300 text-emerald-900 rounded px-1.5 py-0.5"/></td>
+          </tr>
+        `;
+      });
+    }
+
+    function updateRateItem(sec, key, val) {
+      const target = (currentRateGroup === 'A') ? rates.groupA : rates.groupB;
+      target[sec][key] = parseFloat(val) || 0;
+    }
+
+    function copyRatesAcrossGroups() {
+      if (currentRateGroup === 'A') {
+        rates.groupB = JSON.parse(JSON.stringify(rates.groupA));
+        alert('Copied Group A rates to Group B successfully!');
+      } else {
+        rates.groupA = JSON.parse(JSON.stringify(rates.groupB));
+        alert('Copied Group B rates to Group A successfully!');
+      }
+      renderRateTables();
+    }
+
+    function resetDefaultRates() {
+      rates = JSON.parse(JSON.stringify(defaultRates));
+      renderRateTables();
+      alert('Rates reset to official government norms.');
+    }
+
+    /**
+     * RENDER TAB 3 VEGETABLE BILL (SIMPLE TABLE FORMAT)
+     */
+    function renderVegBill() {
+      const includeSattu = document.getElementById('toggle-sattu-inc').checked;
+      const theadTr = document.getElementById('veg-thead-tr');
+      const tbody = document.getElementById('veg-tbody');
+      const tfoot = document.getElementById('veg-tfoot');
+
+      // Setup Table Header depending on Sattu toggle position
+      if (includeSattu) {
+        theadTr.innerHTML = `
+          <th class="py-2 px-3">Date</th>
+          <th class="py-2 px-2 text-right">Mother</th>
+          <th class="py-2 px-2 text-right">Children</th>
+          <th class="py-2 px-2 text-right">SAM</th>
+          <th class="py-2 px-2 text-right font-bold">Total Heads</th>
+          <th class="py-2 px-2 text-right">Egg (₹)</th>
+          <th class="py-2 px-2 text-right">Potato (₹)</th>
+          <th class="py-2 px-2 text-right">Vegetable (₹)</th>
+          <th class="py-2 px-2 text-right">Sattu (₹)</th>
+          <th class="py-2 px-3 text-right font-bold text-emerald-950">Total Expense (₹)</th>
+        `;
+      } else {
+        theadTr.innerHTML = `
+          <th class="py-2 px-3">Date</th>
+          <th class="py-2 px-2 text-right">Mother</th>
+          <th class="py-2 px-2 text-right">Children</th>
+          <th class="py-2 px-2 text-right">SAM</th>
+          <th class="py-2 px-2 text-right font-bold">Total Heads</th>
+          <th class="py-2 px-2 text-right">Egg (₹)</th>
+          <th class="py-2 px-2 text-right">Potato (₹)</th>
+          <th class="py-2 px-2 text-right">Vegetable (₹)</th>
+          <th class="py-2 px-3 text-right font-bold text-emerald-950">Total Expense (₹)</th>
+          <th class="py-2 px-2 text-right text-slate-500">Sattu (₹) [Excluded]</th>
+        `;
+      }
+
+      tbody.innerHTML = '';
+      let sumM = 0, sumC = 0, sumS = 0, sumH = 0;
+      let sumEgg = 0, sumPot = 0, sumVeg = 0, sumSat = 0, sumTot = 0;
+
+      let grpA = { days: 0, m: 0, c: 0, egg: 0, pot: 0, veg: 0, sat: 0, tot: 0 };
+      let grpB = { days: 0, m: 0, c: 0, egg: 0, pot: 0, veg: 0, sat: 0, tot: 0 };
+
+      attendanceRoll.forEach(row => {
+        const isClosed = row.status === 'Closed';
+        const mothers = isClosed ? 0 : (row.pw + row.lm);
+        const children = isClosed ? 0 : row.child;
+        const sam = isClosed ? 0 : row.sam;
+        const heads = mothers + children + sam;
+
+        const r = (row.group === 'A') ? rates.groupA : rates.groupB;
+
+        let egg = isClosed ? 0 : (mothers * r.financial.egg + children * r.financialNormal.egg + sam * r.financialSam.egg);
+        let pot = isClosed ? 0 : (mothers * r.financial.potato + children * r.financialNormal.potato + sam * r.financialSam.potato);
+        let veg = isClosed ? 0 : (mothers * r.financial.veg + children * r.financialNormal.veg + sam * r.financialSam.veg);
+        let sat = isClosed ? 0 : (mothers * r.financial.sattu + children * r.financialNormal.sattu + sam * r.financialSam.sattu);
+
+        let rowTotal = includeSattu ? (egg + pot + veg + sat) : (egg + pot + veg);
+
+        if (!isClosed) {
+          sumM += mothers; sumC += children; sumS += sam; sumH += heads;
+          sumEgg += egg; sumPot += pot; sumVeg += veg; sumSat += sat; sumTot += rowTotal;
+
+          const target = (row.group === 'A') ? grpA : grpB;
+          target.days++; target.m += mothers; target.c += children;
+          target.egg += egg; target.pot += pot; target.veg += veg; target.sat += sat; target.tot += rowTotal;
+        }
+
+        tbody.innerHTML += `
+          <tr class="${isClosed ? 'bg-red-50/40 text-red-700' : 'hover:bg-slate-50'}">
+            <td class="py-1.5 px-3 font-semibold">${row.dateStr}</td>
+            <td class="py-1.5 px-2 text-right">${mothers}</td>
+            <td class="py-1.5 px-2 text-right">${children}</td>
+            <td class="py-1.5 px-2 text-right text-amber-900">${sam}</td>
+            <td class="py-1.5 px-2 text-right font-bold">${heads}</td>
+            <td class="py-1.5 px-2 text-right">${egg.toFixed(2)}</td>
+            <td class="py-1.5 px-2 text-right">${pot.toFixed(2)}</td>
+            <td class="py-1.5 px-2 text-right">${veg.toFixed(2)}</td>
+            ${includeSattu ? `<td class="py-1.5 px-2 text-right">${sat.toFixed(2)}</td>` : ''}
+            <td class="py-1.5 px-3 text-right font-bold text-emerald-950">${rowTotal.toFixed(2)}</td>
+            ${!includeSattu ? `<td class="py-1.5 px-2 text-right text-slate-500">${sat.toFixed(2)}</td>` : ''}
+          </tr>
+        `;
+      });
+
+      // Footer sums
+      tfoot.innerHTML = `
+        <tr>
+          <td class="py-2.5 px-3">MONTH TOTAL</td>
+          <td class="py-2.5 px-2 text-right">${sumM}</td>
+          <td class="py-2.5 px-2 text-right">${sumC}</td>
+          <td class="py-2.5 px-2 text-right text-amber-900">${sumS}</td>
+          <td class="py-2.5 px-2 text-right">${sumH}</td>
+          <td class="py-2.5 px-2 text-right">${sumEgg.toFixed(2)}</td>
+          <td class="py-2.5 px-2 text-right">${sumPot.toFixed(2)}</td>
+          <td class="py-2.5 px-2 text-right">${sumVeg.toFixed(2)}</td>
+          ${includeSattu ? `<td class="py-2.5 px-2 text-right">${sumSat.toFixed(2)}</td>` : ''}
+          <td class="py-2.5 px-3 text-right text-emerald-950 text-sm">₹ ${sumTot.toFixed(2)}</td>
+          ${!includeSattu ? `<td class="py-2.5 px-2 text-right text-slate-500">${sumSat.toFixed(2)}</td>` : ''}
+        </tr>
+      `;
+
+      // Render summary breakdown table below
+      document.getElementById('veg-group-summary-tbody').innerHTML = `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-bold text-emerald-900">Group A (Mon / Wed / Fri)</td>
+          <td class="py-2 px-2 text-center">${grpA.days}</td>
+          <td class="py-2 px-2 text-right">${grpA.m}</td>
+          <td class="py-2 px-2 text-right">${grpA.c}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpA.egg.toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpA.pot.toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpA.veg.toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpA.sat.toFixed(2)}</td>
+          <td class="py-2 px-3 text-right font-bold text-emerald-950">₹ ${grpA.tot.toFixed(2)}</td>
+        </tr>
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-bold text-amber-900">Group B (Tue / Thu / Sat)</td>
+          <td class="py-2 px-2 text-center">${grpB.days}</td>
+          <td class="py-2 px-2 text-right">${grpB.m}</td>
+          <td class="py-2 px-2 text-right">${grpB.c}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpB.egg.toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpB.pot.toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpB.veg.toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${grpB.sat.toFixed(2)}</td>
+          <td class="py-2 px-3 text-right font-bold text-amber-950">₹ ${grpB.tot.toFixed(2)}</td>
+        </tr>
+        <tr class="bg-slate-100 font-bold border-t">
+          <td class="py-2 px-3">Consolidated Total</td>
+          <td class="py-2 px-2 text-center">${grpA.days + grpB.days}</td>
+          <td class="py-2 px-2 text-right">${grpA.m + grpB.m}</td>
+          <td class="py-2 px-2 text-right">${grpA.c + grpB.c}</td>
+          <td class="py-2 px-2 text-right">₹ ${(grpA.egg + grpB.egg).toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${(grpA.pot + grpB.pot).toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${(grpA.veg + grpB.veg).toFixed(2)}</td>
+          <td class="py-2 px-2 text-right">₹ ${(grpA.sat + grpB.sat).toFixed(2)}</td>
+          <td class="py-2 px-3 text-right text-emerald-950">₹ ${(grpA.tot + grpB.tot).toFixed(2)}</td>
+        </tr>
+      `;
+    }
+
+    /**
+     * RENDER TAB 4 STOCK REGISTER & FORM V
+     */
+    function renderStockRegister() {
+      // Render transactions table (5 types supported)
+      const txTbody = document.getElementById('tx-tbody');
+      txTbody.innerHTML = '';
+      if (transactions.length === 0) {
+        txTbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="py-3 px-3 text-center text-slate-400 italic">No transactions recorded yet. Click "Add Transaction" to enter stock receipts, lendings or borrowings.</td>
+          </tr>
+        `;
+      } else {
+        transactions.forEach(t => {
+          const cfg = TX_TYPE_CONFIG[t.type] || { label: t.type, sign: 1, class: 'bg-slate-100 text-slate-800' };
+          txTbody.innerHTML += `
+            <tr class="hover:bg-slate-50">
+              <td class="py-2 px-3 font-semibold">${t.date}</td>
+              <td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${cfg.class}">${cfg.label}</span></td>
+              <td class="py-2 px-2">${t.remarks}</td>
+              <td class="py-2 px-2 text-right font-bold">${t.rice.toFixed(3)}</td>
+              <td class="py-2 px-2 text-right font-bold">${t.dal.toFixed(3)}</td>
+              <td class="py-2 px-2 text-right font-bold">${t.salt.toFixed(3)}</td>
+              <td class="py-2 px-2 text-right font-bold">${t.oil.toFixed(3)}</td>
+              <td class="py-2 px-2 text-center">
+                <button onclick="deleteStockTx('${t.id}')" class="text-red-500 hover:text-red-700" title="Delete"><span class="material-symbols-outlined text-[15px]">delete</span></button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+
+      // Render Form V Table with Ceiling Rule
+      const vTbody = document.getElementById('form-v-tbody');
+      const vTfoot = document.getElementById('form-v-tfoot');
+      vTbody.innerHTML = '';
+
+      let runningBal = {
+        rice: parseFloat(document.getElementById('op-rice').value) || 0,
+        dal:  parseFloat(document.getElementById('op-dal').value)  || 0,
+        salt: parseFloat(document.getElementById('op-salt').value) || 0,
+        oil:  parseFloat(document.getElementById('op-oil').value)  || 0
+      };
+
+      let totAttendance = { m: 0, c: 0, s: 0, h: 0 };
+      let totCommodities = {
+        rice: { rec: 0, cons: 0 },
+        dal:  { rec: 0, cons: 0 },
+        salt: { rec: 0, cons: 0 },
+        oil:  { rec: 0, cons: 0 }
+      };
+
+      let grpA = { days: 0, m: 0, c: 0, rice: 0, dal: 0, salt: 0, oil: 0 };
+      let grpB = { days: 0, m: 0, c: 0, rice: 0, dal: 0, salt: 0, oil: 0 };
+
+      attendanceRoll.forEach(row => {
+        const isClosed = row.status === 'Closed';
+        const mothers = isClosed ? 0 : (row.pw + row.lm);
+        const children = isClosed ? 0 : row.child;
+        const sam = isClosed ? 0 : row.sam;
+        const total = mothers + children + sam;
+
+        if (!isClosed) {
+          totAttendance.m += mothers;
+          totAttendance.c += children;
+          totAttendance.s += sam;
+          totAttendance.h += total;
+        }
+
+        const r = (row.group === 'A') ? rates.groupA : rates.groupB;
+
+        // Daily net receivables from transactions
+        // Rule: Receivables (+), Borrowing (+), Return of Lending (+) => +1
+        // Lending (-), Return of Borrowing (-) => -1
+        const dayTxs = transactions.filter(t => t.date === row.isoDate);
+        let rec = { rice: 0, dal: 0, salt: 0, oil: 0 };
+        dayTxs.forEach(t => {
+          const cfg = TX_TYPE_CONFIG[t.type] || { sign: 1 };
+          const mult = cfg.sign;
+          rec.rice += (t.rice * mult);
+          rec.dal  += (t.dal * mult);
+          rec.salt += (t.salt * mult);
+          rec.oil  += (t.oil * mult);
+        });
+
+        const commodities = ['rice', 'dal', 'salt', 'oil'];
+        let cells = '';
+
+        commodities.forEach(com => {
+          const avail = Math.max(0, runningBal[com] + rec[com]);
+          const theoretical = isClosed ? 0 : (mothers * r.ration[com] + children * r.rationNormal[com] + sam * r.rationSam[com]);
+
+          let actual = 0;
+          let endBal = 0;
+
+          if (avail <= 0) {
+            actual = 0;
+            endBal = 0;
+          } else if (avail < theoretical) {
+            actual = avail; // Ceiling rule
+            endBal = 0;
+          } else {
+            actual = theoretical;
+            endBal = avail - theoretical;
+          }
+
+          runningBal[com] = endBal;
+          totCommodities[com].rec += rec[com];
+          totCommodities[com].cons += actual;
+
+          if (!isClosed) {
+            const target = (row.group === 'A') ? grpA : grpB;
+            target[com] += actual;
+          }
+
+          const recDisplay = rec[com] !== 0 ? (rec[com] > 0 ? `+${rec[com].toFixed(3)}` : rec[com].toFixed(3)) : '-';
+          cells += `
+            <td class="py-1 px-1 text-right text-slate-500">${recDisplay}</td>
+            <td class="py-1 px-1 text-right">${actual.toFixed(3)}</td>
+            <td class="py-1 px-1 text-right font-bold border-r border-slate-200 ${endBal === 0 ? 'text-red-700 bg-red-50/50' : ''}">${endBal.toFixed(3)}</td>
+          `;
+        });
+
+        if (!isClosed) {
+          const target = (row.group === 'A') ? grpA : grpB;
+          target.days++;
+          target.m += mothers;
+          target.c += children;
+        }
+
+        vTbody.innerHTML += `
+          <tr class="${isClosed ? 'bg-red-50/40 text-red-700' : 'hover:bg-slate-50'}">
+            <td class="py-1 px-2 border-r border-slate-200 font-semibold">${row.dateStr}</td>
+            <td class="py-1 px-1 text-right">${mothers}</td>
+            <td class="py-1 px-1 text-right">${children}</td>
+            <td class="py-1 px-1 text-right text-amber-900">${sam}</td>
+            <td class="py-1 px-1 text-right border-r border-slate-200 font-bold">${total}</td>
+            ${cells}
+          </tr>
+        `;
+      });
+
+      // Form V footer totals
+      vTfoot.innerHTML = `
+        <tr>
+          <td class="py-2.5 px-2 border-r border-slate-300">TOTAL</td>
+          <td class="py-2.5 px-1 text-right">${totAttendance.m}</td>
+          <td class="py-2.5 px-1 text-right">${totAttendance.c}</td>
+          <td class="py-2.5 px-1 text-right text-amber-900">${totAttendance.s}</td>
+          <td class="py-2.5 px-1 text-right border-r border-slate-300">${totAttendance.h}</td>
+
+          <td class="py-2.5 px-1 text-right">${totCommodities.rice.rec.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right text-emerald-900">${totCommodities.rice.cons.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right border-r border-slate-300 font-bold text-slate-950">${runningBal.rice.toFixed(3)}</td>
+
+          <td class="py-2.5 px-1 text-right">${totCommodities.dal.rec.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right text-amber-900">${totCommodities.dal.cons.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right border-r border-slate-300 font-bold text-slate-950">${runningBal.dal.toFixed(3)}</td>
+
+          <td class="py-2.5 px-1 text-right">${totCommodities.salt.rec.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right text-emerald-900">${totCommodities.salt.cons.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right border-r border-slate-300 font-bold text-slate-950">${runningBal.salt.toFixed(3)}</td>
+
+          <td class="py-2.5 px-1 text-right">${totCommodities.oil.rec.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right text-amber-900">${totCommodities.oil.cons.toFixed(3)}</td>
+          <td class="py-2.5 px-1 text-right font-bold text-slate-950">${runningBal.oil.toFixed(3)}</td>
+        </tr>
+      `;
+
+      // Group stock consumption breakdown
+      document.getElementById('stock-group-summary-tbody').innerHTML = `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-bold text-emerald-900">Group A (Mon / Wed / Fri)</td>
+          <td class="py-2 px-2 text-center">${grpA.days}</td>
+          <td class="py-2 px-2 text-right">${grpA.m}</td>
+          <td class="py-2 px-2 text-right">${grpA.c}</td>
+          <td class="py-2 px-2 text-right">${grpA.rice.toFixed(3)}</td>
+          <td class="py-2 px-2 text-right">${grpA.dal.toFixed(3)}</td>
+          <td class="py-2 px-2 text-right">${grpA.salt.toFixed(3)}</td>
+          <td class="py-2 px-3 text-right">${grpA.oil.toFixed(3)}</td>
+        </tr>
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-bold text-amber-900">Group B (Tue / Thu / Sat)</td>
+          <td class="py-2 px-2 text-center">${grpB.days}</td>
+          <td class="py-2 px-2 text-right">${grpB.m}</td>
+          <td class="py-2 px-2 text-right">${grpB.c}</td>
+          <td class="py-2 px-2 text-right">${grpB.rice.toFixed(3)}</td>
+          <td class="py-2 px-2 text-right">${grpB.dal.toFixed(3)}</td>
+          <td class="py-2 px-2 text-right">${grpB.salt.toFixed(3)}</td>
+          <td class="py-2 px-3 text-right">${grpB.oil.toFixed(3)}</td>
+        </tr>
+        <tr class="bg-slate-100 font-bold border-t">
+          <td class="py-2 px-3">Monthly Stock Consumed</td>
+          <td class="py-2 px-2 text-center">${grpA.days + grpB.days}</td>
+          <td class="py-2 px-2 text-right">${grpA.m + grpB.m}</td>
+          <td class="py-2 px-2 text-right">${grpA.c + grpB.c}</td>
+          <td class="py-2 px-2 text-right">${(grpA.rice + grpB.rice).toFixed(3)}</td>
+          <td class="py-2 px-2 text-right">${(grpA.dal + grpB.dal).toFixed(3)}</td>
+          <td class="py-2 px-2 text-right">${(grpA.salt + grpB.salt).toFixed(3)}</td>
+          <td class="py-2 px-3 text-right">${(grpA.oil + grpB.oil).toFixed(3)}</td>
+        </tr>
+      `;
+    }
+
+    function saveOpeningStock() {
+      renderStockRegister();
+    }
+
+    function openTxModal() {
+      document.getElementById('tx-date').value = `2026-10-05`;
       document.getElementById('tx-remarks').value = '';
       document.getElementById('tx-rice').value = '0.000';
       document.getElementById('tx-dal').value = '0.000';
       document.getElementById('tx-salt').value = '0.000';
       document.getElementById('tx-oil').value = '0.000';
+      document.getElementById('tx-modal').classList.remove('hidden');
     }
-    document.getElementById('tx-modal').classList.remove('hidden');
-  }
 
-  function closeTxModal() { document.getElementById('tx-modal').classList.add('hidden'); }
-
-  function saveTxEntry() {
-    const editId = document.getElementById('tx-edit-id').value;
-    const entry = {
-      id: editId || ('tx-' + Date.now()),
-      date: document.getElementById('tx-date').value,
-      type: document.getElementById('tx-type').value,
-      remarks: document.getElementById('tx-remarks').value || 'Manual Entry',
-      rice: parseFloat(document.getElementById('tx-rice').value) || 0,
-      dal: parseFloat(document.getElementById('tx-dal').value) || 0,
-      salt: parseFloat(document.getElementById('tx-salt').value) || 0,
-      oil: parseFloat(document.getElementById('tx-oil').value) || 0
-    };
-    if (editId) {
-      const idx = inventoryMovements.findIndex(x => x.id === editId);
-      inventoryMovements[idx] = entry;
-    } else {
-      inventoryMovements.push(entry);
+    function closeTxModal() {
+      document.getElementById('tx-modal').classList.add('hidden');
     }
-    closeTxModal();
-    renderStockModule();
-  }
 
-  function editTxEntry(id) { openTxModal(id); }
-  function deleteTxEntry(id) {
-    if (confirm('Delete this stock transaction?')) {
-      inventoryMovements = inventoryMovements.filter(t => t.id !== id);
-      renderStockModule();
+    function saveStockTx() {
+      const date = document.getElementById('tx-date').value;
+      if (!date) { alert('Please pick a date.'); return; }
+
+      transactions.push({
+        id: 'tx-' + Date.now(),
+        date: date,
+        type: document.getElementById('tx-type').value,
+        remarks: document.getElementById('tx-remarks').value || 'Manual Entry',
+        rice: parseFloat(document.getElementById('tx-rice').value) || 0,
+        dal:  parseFloat(document.getElementById('tx-dal').value) || 0,
+        salt: parseFloat(document.getElementById('tx-salt').value) || 0,
+        oil:  parseFloat(document.getElementById('tx-oil').value) || 0
+      });
+      closeTxModal();
+      renderStockRegister();
     }
-  }
 
-  // TAB 5: FUEL BILL (Simple Table: Date, PW, LM, Children, SAM, Total, Fuel Charge, Condiment Charge, Total)
-  function renderFuelModule() {
-    const tbody = document.getElementById('fuel-simple-tbody');
-    tbody.innerHTML = '';
-    let sumPw = 0, sumLm = 0, sumKids = 0, sumSams = 0, sumTotalHeads = 0;
-    let sumFuel = 0, sumMasala = 0, sumGross = 0;
-
-    attendanceRoll.forEach(row => {
-      const isClosed = row.status === 'Closed';
-      const pw = isClosed ? 0 : row.pw;
-      const lm = isClosed ? 0 : row.lm;
-      const kids = isClosed ? 0 : row.child;
-      const sams = isClosed ? 0 : row.sam;
-      const heads = isClosed ? 0 : (pw + lm + kids + sams);
-
-      let fVal = 0, mVal = 0, slabName = '-';
-      if (!isClosed && heads > 0) {
-        sumPw += pw; sumLm += lm; sumKids += kids; sumSams += sams; sumTotalHeads += heads;
-        if (heads >= 1 && heads <= 30) { fVal = 32.0; mVal = 0.90; slabName = '1-30 Heads'; }
-        else if (heads >= 31 && heads <= 50) { fVal = 43.0; mVal = 0.95; slabName = '31-50 Heads'; }
-        else if (heads >= 51 && heads <= 70) { fVal = 53.0; mVal = 1.05; slabName = '51-70 Heads'; }
-        else if (heads > 70) { fVal = 60.0; mVal = 1.15; slabName = 'Above 70'; }
-      }
-      const dayTotal = fVal + mVal;
-      sumFuel += fVal; sumMasala += mVal; sumGross += dayTotal;
-
-      tbody.innerHTML += `
-        <tr class="${isClosed ? 'bg-red-50/40 text-red-700' : 'hover:bg-gray-50'}">
-          <td class="py-2 px-3 font-semibold">${row.dateStr}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : pw}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : lm}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : kids}</td>
-          <td class="py-2 px-2 text-right text-amber-900">${isClosed ? '-' : sams}</td>
-          <td class="py-2 px-2 text-right font-bold">${isClosed ? '-' : heads}</td>
-          <td class="py-2 px-3 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold ${isClosed ? 'text-gray-400' : 'bg-gray-100 text-gray-800'}">${slabName}</span></td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : fVal.toFixed(2)}</td>
-          <td class="py-2 px-2 text-right">${isClosed ? '-' : mVal.toFixed(2)}</td>
-          <td class="py-2 px-3 text-right font-bold text-emerald-900 bg-emerald-50/30">${isClosed ? '-' : dayTotal.toFixed(2)}</td>
-        </tr>`;
-    });
-
-    document.getElementById('fuel-simple-tfoot').innerHTML = `
-      <tr>
-        <td class="py-2.5 px-3">MONTH TOTAL</td>
-        <td class="py-2.5 px-2 text-right">${sumPw}</td>
-        <td class="py-2.5 px-2 text-right">${sumLm}</td>
-        <td class="py-2.5 px-2 text-right">${sumKids}</td>
-        <td class="py-2.5 px-2 text-right text-amber-900">${sumSams}</td>
-        <td class="py-2.5 px-2 text-right font-bold">${sumTotalHeads}</td>
-        <td class="py-2.5 px-3 text-center">-</td>
-        <td class="py-2.5 px-2 text-right">₹ ${sumFuel.toFixed(2)}</td>
-        <td class="py-2.5 px-2 text-right">₹ ${sumMasala.toFixed(2)}</td>
-        <td class="py-2.5 px-3 text-right text-emerald-900 bg-emerald-100/50">₹ ${sumGross.toFixed(2)}</td>
-      </tr>`;
-  }
-
-  // TAB SWITCHING
-  function switchMainTab(idx) {
-    for (let i = 1; i <= 6; i++) {
-      document.getElementById(`module-${i}`).classList.toggle('hidden', i !== idx);
-      document.getElementById(`nav-tab-${i}`).className = (i === idx)
-        ? 'px-4 py-2.5 border-b-2 border-white text-white font-semibold flex items-center gap-1.5 transition'
-        : 'px-4 py-2.5 border-b-2 border-transparent hover:text-emerald-200 flex items-center gap-1.5 transition text-emerald-100';
+    function deleteStockTx(id) {
+      transactions = transactions.filter(t => t.id !== id);
+      renderStockRegister();
     }
-    if (idx === 2) renderRateChartModule();
-    if (idx === 3) renderVegetableModule();
-    if (idx === 4) renderStockModule();
-    if (idx === 5) renderFuelModule();
-  }
 
-  function changeCalendarMonth(val) {
-    activeMonthKey = val;
-    const m = {
-      '6-2026': ['June 2026', 30], '7-2026': ['July 2026', 31], '8-2026': ['August 2026', 31],
-      '9-2026': ['September 2026', 30], '10-2026': ['October 2026', 31],
-      '11-2026': ['November 2026', 30], '12-2026': ['December 2026', 31]
-    }[val];
-    activeMonthName = m[0]; activeMonthDays = m[1];
-    document.getElementById('label-active-month').innerText = `${activeMonthName} (${activeMonthDays} Days)`;
-    initAttendanceRoll(); renderAttendanceTable();
-  }
-
-  function updateProfileFields() {
-    const cname = document.getElementById('prof-cname').value;
-    const cno = document.getElementById('prof-cno').value;
-    const ccode = document.getElementById('prof-ccode').value;
-    document.getElementById('header-cname').innerText = `${cname} (No. ${cno})`;
-    document.getElementById('header-ccode').innerText = `14-Digit: ${ccode}`;
-  }
-
-  // DIRECT HTML FILE DOWNLOAD (Self-Contained File)
-  function downloadSelfHtmlFile() {
-    const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'ICDS_Anganwadi_Master_Portal.html';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 200);
-  }
-
-  // DIRECT SINGLE-CLICK A4 PDF DOWNLOAD (No print dialog)
-  function exportDirectPdf(type) {
-    if (type === 'fuel') {
-      const cname = document.getElementById('prof-cname').value;
-      const cno = document.getElementById('prof-cno').value;
-      const ccode = document.getElementById('prof-ccode').value;
-      const gp = document.getElementById('prof-gp').value;
-      document.getElementById('pdf-fuel-cname').innerText = `${cname} (No. ${cno})`;
-      document.getElementById('pdf-fuel-ccode').innerText = ccode.substring(0, 11);
-      document.getElementById('pdf-fuel-gp').innerText = gp;
-      document.getElementById('pdf-fuel-month').innerText = activeMonthName;
-
-      const tbody = document.getElementById('pdf-fuel-tbody');
+    /**
+     * RENDER TAB 5 FUEL BILL (SIMPLE TABLE FORMAT)
+     */
+    function renderFuelBill() {
+      const tbody = document.getElementById('fuel-tbody');
+      const tfoot = document.getElementById('fuel-tfoot');
       tbody.innerHTML = '';
-      let sumPw = 0, sumLm = 0, sumKids = 0, sumHeads = 0, sumFuel = 0, sumMasala = 0, sumTotal = 0;
+
+      let sumPw = 0, sumLm = 0, sumC = 0, sumS = 0, sumH = 0;
+      let sumFuel = 0, sumMas = 0, sumTot = 0;
 
       attendanceRoll.forEach(row => {
         const isClosed = row.status === 'Closed';
         const pw = isClosed ? 0 : row.pw;
         const lm = isClosed ? 0 : row.lm;
-        const kids = isClosed ? 0 : row.child;
-        const heads = isClosed ? 0 : (pw + lm + kids + (row.sam || 0));
+        const child = isClosed ? 0 : row.child;
+        const sam = isClosed ? 0 : row.sam;
+        const heads = pw + lm + child + sam;
 
-        let f = [0,0,0,0], m = [0,0,0,0];
-        let dayF = 0, dayM = 0;
+        let fuel = 0;
+        let masala = 0;
+
         if (!isClosed && heads > 0) {
-          sumPw += pw; sumLm += lm; sumKids += kids; sumHeads += heads;
-          if (heads <= 30) { f[0] = 32.0; m[0] = 0.90; dayF = 32.0; dayM = 0.90; }
-          else if (heads <= 50) { f[1] = 43.0; m[1] = 0.95; dayF = 43.0; dayM = 0.95; }
-          else if (heads <= 70) { f[2] = 53.0; m[2] = 1.05; dayF = 53.0; dayM = 1.05; }
-          else { f[3] = 60.0; m[3] = 1.15; dayF = 60.0; dayM = 1.15; }
+          if (heads <= 30) {
+            fuel = 32.00; masala = 0.90;
+          } else if (heads <= 50) {
+            fuel = 43.00; masala = 0.95;
+          } else if (heads <= 70) {
+            fuel = 53.00; masala = 1.05;
+          } else {
+            fuel = 60.00; masala = 1.15;
+          }
         }
-        sumFuel += dayF; sumMasala += dayM; sumTotal += (dayF + dayM);
-        const dayTotParts = (dayF + dayM > 0) ? (dayF + dayM).toFixed(2).split('.') : ['-', '-'];
+
+        const totalExp = fuel + masala;
+
+        if (!isClosed) {
+          sumPw += pw; sumLm += lm; sumC += child; sumS += sam; sumH += heads;
+          sumFuel += fuel; sumMas += masala; sumTot += totalExp;
+        }
 
         tbody.innerHTML += `
-          <tr class="${isClosed ? 'bg-red-50/40 text-red-600' : ''}">
-            <td class="border border-gray-400 p-0.5">${row.dayNumber}</td>
-            <td class="border border-gray-400 p-0.5">${isClosed ? '-' : pw}</td>
-            <td class="border border-gray-400 p-0.5">${isClosed ? '-' : lm}</td>
-            <td class="border border-gray-400 p-0.5">${isClosed ? '-' : kids}</td>
-            <td class="border border-gray-400 p-0.5 font-bold">${isClosed ? '-' : heads}</td>
-            <td class="border border-gray-400 p-0.5">${f[0] ? f[0] : ''}</td><td class="border border-gray-400 p-0.5">${f[1] ? f[1] : ''}</td><td class="border border-gray-400 p-0.5">${f[2] ? f[2] : ''}</td><td class="border border-gray-400 p-0.5">${f[3] ? f[3] : ''}</td>
-            <td class="border border-gray-400 p-0.5">${m[0] ? m[0] : ''}</td><td class="border border-gray-400 p-0.5">${m[1] ? m[1] : ''}</td><td class="border border-gray-400 p-0.5">${m[2] ? m[2] : ''}</td><td class="border border-gray-400 p-0.5">${m[3] ? m[3] : ''}</td>
-            <td class="border border-gray-400 p-0.5 font-bold">${dayTotParts[0]}</td><td class="border border-gray-400 p-0.5">${dayTotParts[1]}</td>
-          </tr>`;
+          <tr class="${isClosed ? 'bg-red-50/40 text-red-700' : 'hover:bg-slate-50'}">
+            <td class="py-1.5 px-3 font-semibold">${row.dateStr}</td>
+            <td class="py-1.5 px-2 text-right">${pw}</td>
+            <td class="py-1.5 px-2 text-right">${lm}</td>
+            <td class="py-1.5 px-2 text-right">${child}</td>
+            <td class="py-1.5 px-2 text-right text-amber-900">${sam}</td>
+            <td class="py-1.5 px-2 text-right font-bold">${heads}</td>
+            <td class="py-1.5 px-2 text-right">${fuel.toFixed(2)}</td>
+            <td class="py-1.5 px-2 text-right">${masala.toFixed(2)}</td>
+            <td class="py-1.5 px-3 text-right font-bold text-emerald-950">${totalExp.toFixed(2)}</td>
+          </tr>
+        `;
       });
 
-      const totParts = sumTotal.toFixed(2).split('.');
-      document.getElementById('pdf-fuel-tfoot').innerHTML = `
+      tfoot.innerHTML = `
         <tr>
-          <td class="border border-gray-400 p-1 font-bold">মোট</td>
-          <td class="border border-gray-400 p-1">${sumPw}</td>
-          <td class="border border-gray-400 p-1">${sumLm}</td>
-          <td class="border border-gray-400 p-1">${sumKids}</td>
-          <td class="border border-gray-400 p-1 font-bold">${sumHeads}</td>
-          <td colspan="4" class="border border-gray-400 p-1">₹ ${sumFuel.toFixed(2)}</td>
-          <td colspan="4" class="border border-gray-400 p-1">₹ ${sumMasala.toFixed(2)}</td>
-          <td class="border border-gray-400 p-1 font-bold">${totParts[0]}</td>
-          <td class="border border-gray-400 p-1">${totParts[1]}</td>
-        </tr>`;
-
-      const elem = document.getElementById('fuel-pdf-template');
-      elem.parentElement.classList.remove('hidden');
-      const opt = {
-        margin: [5, 5, 5, 5],
-        filename: `Fuel_Bill_${activeMonthKey}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(elem).save().then(() => {
-        elem.parentElement.classList.add('hidden');
-      });
-    } else if (type === 'veg') {
-      const elem = document.getElementById('module-3');
-      const opt = {
-        margin: [5, 5, 5, 5],
-        filename: `Vegetable_Bill_${activeMonthKey}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(elem).save();
-    } else if (type === 'stock') {
-      const elem = document.getElementById('module-4');
-      const opt = {
-        margin: [5, 5, 5, 5],
-        filename: `Stock_Bill_Form_V_${activeMonthKey}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-      };
-      html2pdf().set(opt).from(elem).save();
+          <td class="py-2.5 px-3">MONTH TOTAL</td>
+          <td class="py-2.5 px-2 text-right">${sumPw}</td>
+          <td class="py-2.5 px-2 text-right">${sumLm}</td>
+          <td class="py-2.5 px-2 text-right">${sumC}</td>
+          <td class="py-2.5 px-2 text-right text-amber-900">${sumS}</td>
+          <td class="py-2.5 px-2 text-right">${sumH}</td>
+          <td class="py-2.5 px-2 text-right">₹ ${sumFuel.toFixed(2)}</td>
+          <td class="py-2.5 px-2 text-right">₹ ${sumMas.toFixed(2)}</td>
+          <td class="py-2.5 px-3 text-right text-emerald-950 text-sm">₹ ${sumTot.toFixed(2)}</td>
+        </tr>
+      `;
     }
-  }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initAttendanceRoll();
-    updateBatchSum();
-    renderAttendanceTable();
-    updateProfileFields();
-    renderRateChartModule();
-  });
-</script>
-</body>
-</html>
+    /**
+     * TAB NAVIGATION SWITCHER
+     */
+    function switchTab(num) {
+      for (let i = 1; i <= 6; i++) {
+        const mod = document.getElementById('module-' + i);
+        const nav = document.getElementById('nav-tab-' + i);
+        if (i === num) {
+          mod.classList.remove('hidden');
+          nav.className = 'px-4 py-2.5 border-b-2 border-emerald-400 text-emerald-300 font-bold flex items-center gap-1.5 transition';
+        } else {
+          mod.classList.add('hidden');
+          nav.className = 'px-4 py-2.5 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-1.5 transition text-slate-400';
+        }
+      }
+
+      if (num === 2) renderRateTables();
+      if (num === 3) renderVegBill();
+      if (num === 4) renderStockRegister();
+      if (num === 5) renderFuelBill();
+    }
+
+    function updateProfileMeta() {
+      const cname = document.getElementById('prof-cname').value || 'Dakshin Para Anganwadi Centre';
+      let code = document.getElementById('prof-awc-code').value || '19336040201';
+      code = code.replace(/\D/g, '').slice(0, 11);
+      document.getElementById('prof-awc-code').value = code;
+      document.getElementById('header-cname').innerText = cname;
+      document.getElementById('header-awc-code').innerText = `11-Digit: ${code}`;
+    }
+
+    function changeCalendarMonth(val) {
+      activeMonthKey = val;
+      const months = {
+        '6-2026': { name: 'June 2026', days: 30 },
+        '7-2026': { name: 'July 2026', days: 31 },
+        '8-2026': { name: 'August 2026', days: 31 },
+        '9-2026': { name: 'September 2026', days: 30 },
+        '10-2026': { name: 'October 2026', days: 31 },
+        '11-2026': { name: 'November 2026', days: 30 },
+        '12-2026': { name: 'December 2026', days: 31 }
+      };
+      activeMonthName = months[val].name;
+      activeMonthDays = months[val].days;
+
+      // Synchronize both dropdown selectors
+      document.getElementById('global-month-picker').value = val;
+      const stockPicker = document.getElementById('stock-month-picker');
+      if (stockPicker) stockPicker.value = val;
+
+      initAttendanceRoll();
+      renderAttendanceTable();
+      renderVegBill();
+      renderStockRegister();
+      renderFuelBill();
+    }
+
+    /**
+     * DIRECT CLIENT-SIDE PDF GENERATION (html2pdf.js)
+     * Triggers clean PDF download to disk without invoking window.print()
+     */
+    function downloadDirectPdf(type) {
+      let targetElement = null;
+      let filename = 'ICDS_Document.pdf';
+      let orientation = 'portrait';
+
+      if (type === 'veg') {
+        renderVegBill();
+        targetElement = document.getElementById('veg-bill-printable-card');
+        filename = `ICDS_Vegetable_Bill_${activeMonthKey}.pdf`;
+        orientation = 'portrait';
+      } else if (type === 'stock') {
+        renderStockRegister();
+        targetElement = document.getElementById('stock-bill-printable-card');
+        filename = `ICDS_Stock_Register_FormV_${activeMonthKey}.pdf`;
+        orientation = 'landscape';
+      } else if (type === 'fuel') {
+        renderFuelBill();
+        targetElement = document.getElementById('fuel-bill-printable-card');
+        filename = `ICDS_Fuel_Bill_${activeMonthKey}.pdf`;
+        orientation = 'portrait';
+      }
+
+      if (!targetElement) return;
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: orientation }
+      };
+
+      // Direct download without browser printer prompt
+      html2pdf().set(opt).from(targetElement).save();
+    }
+
+    // Initialize application
+    document.addEventListener('DOMContentLoaded', () => {
+      initAttendanceRoll();
+      renderAttendanceTable();
+      renderRateTables();
+      renderVegBill();
+      renderStockRegister();
+      renderFuelBill();
+    });
+  </script>
+</body></html>
